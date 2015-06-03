@@ -28,11 +28,11 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
      */
     Route::group(array('prefix' => 'sensor'), function()
     {
-        /**
-         * Extending Sensor resource
-         */
         Route::get('{id}/predict', 'SensorController@predict');
+
+        Route::get('{id}/values', 'SensorValueController@index');
+        Route::get('{id}/values/{valueId}', 'SensorValueController@show');
     });
-    Route::get('', 'FooController@bar');
+
     Route::resource('sensor', 'SensorController');
 });

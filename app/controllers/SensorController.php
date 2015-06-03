@@ -1,29 +1,30 @@
 <?php
 
-class SensorController extends \BaseController {
+class SensorController extends \BaseController
+{
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
         $sensors = Sensor::all();
 
         return Response::json(array(
             'error' => false,
             'sensors' => $sensors
         ), 200);
-	}
+    }
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function store()
+    {
         $sensor = new Sensor();
         $sensor->name = Request::get('name');
         $sensor->description = Request::get('description');
@@ -38,17 +39,17 @@ class SensorController extends \BaseController {
             'sensors' => $sensor->toArray()),
             200
         );
-	}
+    }
 
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function show($id)
+    {
         // Make sure current user owns the requested resource
         $sensor = Sensor::where('id', $id)
             ->take(1)
@@ -59,26 +60,24 @@ class SensorController extends \BaseController {
             'sensors' => $sensor->toArray()),
             200
         );
-	}
+    }
 
 
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function update($id)
+    {
         $sensor = Sensor::find($id);
 
-        if ( Request::get('name') )
-        {
+        if (Request::get('name')) {
             $sensor->name = Request::get('name');
         }
 
-        if ( Request::get('description') )
-        {
+        if (Request::get('description')) {
             $sensor->description = Request::get('description');
         }
 
@@ -89,17 +88,17 @@ class SensorController extends \BaseController {
             'message' => 'Sensor updated',
             'details' => $sensor->toArray()
         ), 200);
-	}
+    }
 
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function destroy($id)
+    {
         $sensor = Sensor::find($id);
         $sensorBackup = $sensor;
 
@@ -110,7 +109,7 @@ class SensorController extends \BaseController {
             'message' => 'Sensor deleted',
             'details' => $sensorBackup->toArray()
         ), 200);
-	}
+    }
 
     public function predict($id)
     {

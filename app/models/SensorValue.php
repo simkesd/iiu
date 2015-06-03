@@ -13,7 +13,7 @@ class SensorValue extends Eloquent
      *
      * @var string
      */
-    protected $table = 'sensors';
+    protected $table = 'sensor_values';
 
 
 
