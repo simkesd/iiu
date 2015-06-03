@@ -17,6 +17,7 @@ class CreateSensorsTable extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->string('description');
+            $table->string('value_type');
             $table->timestamps();
         });
     }

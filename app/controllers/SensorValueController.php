@@ -10,20 +10,13 @@ class SensorValueController extends \BaseController
      */
     public function index($id)
     {
-        if ($id) {
-            $sensorValues = SensorValue::where('sensor_id', $id)
-                ->get();
+        $sensorValues = SensorValue::where('sensor_id', $id)
+            ->get();
 
-            return Response::json(array(
-                'error' => false,
-                'sensors' => $sensorValues
-            ), 200);
-        } else {
-            return Response::json(array(
-                'error' => true,
-                'message' => 'There is no sensor with given id.'
-            ), 404);
-        }
+        return Response::json(array(
+            'error' => false,
+            'sensors' => $sensorValues
+        ), 200);
     }
 
 
@@ -105,17 +98,23 @@ class SensorValueController extends \BaseController
     public function destroy($id, $valueId)
     {
         $sensorValue = SensorValue::where('sensor_id', $id)
-            ->where('id', $valueId)
-            ->first();
+            ->find($valueId);
 
-        $sensorValueBackup = $sensorValue;
+        if($sensorValue) {
+            $sensorValueBackup = $sensorValue;
 
-        $sensorValue->delete();
+            $sensorValue->delete();
 
-        return Response::json(array(
-            'error' => false,
-            'message' => 'Sensor deleted',
-            'details' => $sensorValueBackup->toArray()
-        ), 200);
+            return Response::json(array(
+                'error' => false,
+                'message' => 'Sensor deleted',
+                'details' => $sensorValueBackup->toArray()
+            ), 200);
+        }else {
+            return Response::json(array(
+                'error' => true,
+                'message' => 'Sensor with given id not found.'
+            ), 404);
+        }
     }
 }
