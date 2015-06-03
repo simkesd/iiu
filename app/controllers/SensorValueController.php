@@ -34,7 +34,21 @@ class SensorValueController extends \BaseController
      */
     public function store()
     {
-        //
+        $sensorValue = new SensorValue();
+
+        $sensorValue->value = Request::get('value');
+        $sensorValue->sensor_id = Request::get('sensor_id');
+
+        // Validation and Filtering is sorely needed!!
+        // Seriously, I'm a bad person for leaving that out.
+
+        $sensorValue->save();
+
+        return Response::json(array(
+            'error' => false,
+            'sensors' => $sensorValue->toArray()),
+            200
+        );
     }
 
 
@@ -64,9 +78,21 @@ class SensorValueController extends \BaseController
      * @param  int $id
      * @return Response
      */
-    public function update($id)
+    public function update($id, $valueId)
     {
-        //
+        $sensorValue = SensorValue::where('sensor_id', $id)->find($valueId);
+
+        if (Request::get('value')) {
+            $sensorValue->value = Request::get('value');
+        }
+
+        $sensorValue->save();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Sensor updated',
+            'details' => $sensorValue->toArray()
+        ), 200);
     }
 
 
@@ -92,6 +118,4 @@ class SensorValueController extends \BaseController
             'details' => $sensorValueBackup->toArray()
         ), 200);
     }
-
-
 }

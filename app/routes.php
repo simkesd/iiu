@@ -32,6 +32,8 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
 
         Route::get('{id}/values', 'SensorValueController@index');
         Route::get('{id}/values/{valueId}', 'SensorValueController@show');
+        Route::post('{id}/values', 'SensorValueController@store');
+        Route::put('{id}/values/{valueId}', 'SensorValueController@update');
         Route::delete('{id}/values/{valueId}', 'SensorValueController@destroy');
     });
 
