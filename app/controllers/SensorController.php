@@ -112,5 +112,12 @@ class SensorController extends \BaseController {
         ), 200);
 	}
 
+    public function predict($id)
+    {
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Sensor prediction for ' . $id,
+        ), 200);
+    }
 
 }
