@@ -9,24 +9,13 @@ class SensorController extends \BaseController {
 	 */
 	public function index()
 	{
+        $sensors = Sensor::all();
+
         return Response::json(array(
             'error' => false,
-            'sensors' => 'Test sensor'),
-            200
-        );
+            'sensors' => $sensors
+        ), 200);
 	}
-
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
-	}
-
 
 	/**
 	 * Store a newly created resource in storage.
@@ -35,7 +24,20 @@ class SensorController extends \BaseController {
 	 */
 	public function store()
 	{
-		//
+        $sensor = new Sensor();
+        $sensor->name = Request::get('name');
+        $sensor->description = Request::get('description');
+
+        // Validation and Filtering is sorely needed!!
+        // Seriously, I'm a bad person for leaving that out.
+
+        $sensor->save();
+
+        return Response::json(array(
+            'error' => false,
+            'sensors' => $sensor->toArray()),
+            200
+        );
 	}
 
 
@@ -47,19 +49,16 @@ class SensorController extends \BaseController {
 	 */
 	public function show($id)
 	{
-		//
-	}
+        // Make sure current user owns the requested resource
+        $sensor = Sensor::where('id', $id)
+            ->take(1)
+            ->get();
 
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
+        return Response::json(array(
+            'error' => false,
+            'sensors' => $sensor->toArray()),
+            200
+        );
 	}
 
 
@@ -71,7 +70,25 @@ class SensorController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		//
+        $sensor = Sensor::find($id);
+
+        if ( Request::get('name') )
+        {
+            $sensor->name = Request::get('name');
+        }
+
+        if ( Request::get('description') )
+        {
+            $sensor->description = Request::get('description');
+        }
+
+        $sensor->save();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Sensor updated',
+            'details' => $sensor->toArray()
+        ), 200);
 	}
 
 
@@ -83,7 +100,16 @@ class SensorController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+        $sensor = Sensor::find($id);
+        $sensorBackup = $sensor;
+
+        $sensor->delete();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Sensor deleted',
+            'details' => $sensorBackup->toArray()
+        ), 200);
 	}
 
 

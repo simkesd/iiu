@@ -16,5 +16,8 @@ class Sensor extends Eloquent
     protected $table = 'sensors';
 
 
+    public $validationRules = array(
+
+    );
 
 }
