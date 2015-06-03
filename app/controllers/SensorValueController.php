@@ -76,9 +76,21 @@ class SensorValueController extends \BaseController
      * @param  int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($id, $valueId)
     {
-        //
+        $sensorValue = SensorValue::where('sensor_id', $id)
+            ->where('id', $valueId)
+            ->first();
+
+        $sensorValueBackup = $sensorValue;
+
+        $sensorValue->delete();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Sensor deleted',
+            'details' => $sensorValueBackup->toArray()
+        ), 200);
     }
 
 
