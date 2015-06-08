@@ -12,11 +12,11 @@ class ActuatorController extends \BaseController {
         $actuators = Actuator::orderBy('created_at');
 
         if(Request::get('from')) {
-            $actuators->where('created_at', '>', new DateTime(Request::get('from')));
+            $actuators->where('updated_at', '>', new DateTime(Request::get('from')));
         }
 
         if(Request::get('to')) {
-            $actuators->where('created_at', '<', new DateTime(Request::get('to')));
+            $actuators->where('updated_at', '<', new DateTime(Request::get('to')));
         }
 
         return Response::json(array(
