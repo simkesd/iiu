@@ -10,7 +10,17 @@ class SensorController extends \BaseController
      */
     public function index()
     {
-        $sensors = Sensor::all();
+        $sensors = Sensor::orderBy('created_at');
+
+        if(Request::get('from')) {
+            $sensors->where('created_at', '>', new DateTime(Request::get('from')));
+        }
+
+        if(Request::get('to')) {
+            $sensors->where('created_at', '<', new DateTime(Request::get('to')));
+        }
+
+        $sensors = $sensors->get();
 
         return Response::json(array(
             'error' => false,
