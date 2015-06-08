@@ -21,7 +21,7 @@ class ActuatorController extends \BaseController {
 
         return Response::json(array(
             'error' => false,
-            'sensors' => $actuators->get()
+            'actuators' => $actuators->get()
         ), 200);
 
     }
@@ -34,7 +34,20 @@ class ActuatorController extends \BaseController {
 	 */
 	public function store()
 	{
-		//
+        $actuator = new Actuator();
+        $actuator->name = Request::get('name');
+        $actuator->description = Request::get('description');
+
+        // Validation and Filtering is sorely needed!!
+        // Seriously, I'm a bad person for leaving that out.
+
+        $actuator->save();
+
+        return Response::json(array(
+            'error' => false,
+            'actuators' => $actuator->toArray()),
+            200
+        );
 	}
 
 
