@@ -13,7 +13,7 @@ class Actuator extends Eloquent
      *
      * @var string
      */
-    protected $table = 'sensors';
+    protected $table = 'actuators';
 
 
 

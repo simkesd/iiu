@@ -38,4 +38,7 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
     });
 
     Route::resource('sensor', 'SensorController');
+
+
+    Route::resource('actuator', 'ActuatorController');
 });
