@@ -40,5 +40,9 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
     Route::resource('sensor', 'SensorController');
 
 
+    Route::group(array('prefix' => 'actuator'), function()
+    {
+        Route::get('power', 'ActuatorController@power');
+    });
     Route::resource('actuator', 'ActuatorController');
 });
