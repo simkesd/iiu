@@ -13,11 +13,39 @@ imarControllers.controller('apiCtrl', ['$scope', '$http',
 imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor',
     function ($scope, $http, Sensor) {
         console.log('sensor controller called');
-        $scope.sensors = Sensor.query();
-        //$scope.orderProp = 'age';
+        Sensor.get({}, function(response) {
+            $scope.sensors = response.sensors;
+            console.log(response.sensors);
+        });
     }]);
 
 imarControllers.controller('actuatorListCtrl', ['$scope', '$http',
     function ($scope, $http) {
         console.log('actuator controller called');
+    }]);
+
+
+imarControllers.controller('sensorAddCtrl', ['$scope', '$http', 'Sensor',
+    function ($scope, $http, Sensor) {
+        console.log('sensor add controller called');
+        $scope.sensor = {};
+        $scope.master = {};
+
+        $scope.update = function(sensor) {
+            $scope.master = angular.copy(sensor);
+            Sensor.save(sensor);
+        };
+
+
+
+    }]);
+
+imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Sensor',
+    function ($scope, $routeParams, Sensor) {
+        console.log('sensor add controller called');
+
+
+        Sensor.get({id: $routeParams.id}, function(response) {
+            $scope.sensor = response.sensor[0];
+        });
     }]);

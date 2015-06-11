@@ -36,8 +36,9 @@ class SensorController extends \BaseController
     public function store()
     {
         $sensor = new Sensor();
-        $sensor->name = Request::get('name');
-        $sensor->description = Request::get('description');
+        $sensor->name = Input::get('name');
+        $sensor->description = Input::get('description');
+        $sensor->value_type = Input::get('value_type');
 
         // Validation and Filtering is sorely needed!!
         // Seriously, I'm a bad person for leaving that out.
@@ -67,9 +68,7 @@ class SensorController extends \BaseController
 
         return Response::json(array(
             'error' => false,
-            'sensors' => $sensor->toArray()),
-            200
-        );
+            'sensor' => $sensor->first()), 200);
     }
 
 

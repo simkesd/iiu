@@ -1,3 +1,11 @@
-<div>
-    SENSOR LIST
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">List of sensors</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div ng-repeat="sensor in sensors">
+    <span>{{ sensor.id }}. </span>
+    <span>{{ sensor.name }}</span>
+    <span>{{ sensor.value_type }}</span>
 </div>
