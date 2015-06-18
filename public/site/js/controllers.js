@@ -52,3 +52,10 @@ imarControllers.controller('actuatorAddCtrl', ['$scope', '$http', 'Actuator',
         };
     }]);
 
+imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Actuator',
+    function ($scope, $routeParams, Actuator) {
+        console.log('sensor add controller called');
+        Actuator.get({id: $routeParams.id}, function (response) {
+            $scope.actuator = response.actuator[0];
+        });
+    }]);
