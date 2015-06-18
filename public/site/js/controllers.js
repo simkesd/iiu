@@ -34,9 +34,9 @@ imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Senso
     function ($scope, $routeParams, Sensor) {
         console.log('sensor add controller called');
 
-
         Sensor.get({id: $routeParams.id}, function (response) {
-            $scope.sensor = response.sensor[0];
+            console.log(response);
+            $scope.sensor = response.sensor;
         });
     }]);
 
