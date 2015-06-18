@@ -23,6 +23,10 @@ imarApp.config(['$routeProvider',
                 templateUrl: 'partials/actuator-list.html',
                 controller: 'actuatorListCtrl'
             }).
+            when('/actuator-add', {
+                templateUrl: 'partials/actuator-add.html',
+                controller: 'actuatorAddCtrl'
+            }).
             otherwise({
                 redirectTo: '/'
             });
