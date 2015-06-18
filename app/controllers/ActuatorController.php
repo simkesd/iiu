@@ -36,8 +36,8 @@ class ActuatorController extends \BaseController
     public function store()
     {
         $actuator = new Actuator();
-        $actuator->name = Request::get('name');
-        $actuator->description = Request::get('description');
+        $actuator->name = Input::get('name');
+        $actuator->description = Input::get('description');
 
         // Validation and Filtering is sorely needed!!
         // Seriously, I'm a bad person for leaving that out.
