@@ -1,15 +1,5 @@
 var imarControllers = angular.module('imarControllers', []);
 
-imarControllers.controller('apiCtrl', ['$scope', '$http',
-    function ($scope, $http) {
-        //$http.get('http://imar.local/api/v1.0/sensor').success(function(data) {
-        //    $scope.phones = data;
-        //    console.log(data)
-        //});
-
-        //$scope.orderProp = 'age';
-    }]);
-
 imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor',
     function ($scope, $http, Sensor) {
         console.log('sensor controller called');
@@ -19,9 +9,12 @@ imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor',
         });
     }]);
 
-imarControllers.controller('actuatorListCtrl', ['$scope', '$http',
-    function ($scope, $http) {
-        console.log('actuator controller called');
+imarControllers.controller('actuatorListCtrl', ['$scope', '$http', 'Actuator',
+    function ($scope, $http, Actuator) {
+        Actuator.get({}, function(response) {
+            $scope.actuators = response.actuators;
+            console.log(response.actuators);
+        });
     }]);
 
 

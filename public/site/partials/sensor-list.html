@@ -4,8 +4,42 @@
     </div>
     <!-- /.col-lg-12 -->
 </div>
-<div ng-repeat="sensor in sensors">
-    <span>{{ sensor.id }}. </span>
-    <span>{{ sensor.name }}</span>
-    <span>{{ sensor.value_type }}</span>
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                DataTables Advanced Tables
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="dataTable_wrapper">
+                    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>id</th>
+                            <th>Name</th>
+                            <th>Value type</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="sensor in sensors" class="odd gradeX">
+                            <td>#</td>
+                            <td>{{ sensor.id }}</td>
+                            <td>{{ sensor.name }}</td>
+                            <td>{{ sensor.value_type }}</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
 </div>
+<!-- /.row -->
