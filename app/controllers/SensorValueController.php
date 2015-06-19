@@ -16,7 +16,7 @@ class SensorValueController extends \BaseController
 
         return Response::json(array(
             'error' => false,
-            'sensors' => $sensorValues
+            'sensorValues' => $sensorValues
         ), 200);
     }
 
@@ -61,7 +61,7 @@ class SensorValueController extends \BaseController
 
         return Response::json(array(
             'error' => false,
-            'sensorValues' => $sensorValue
+            'sensors' => $sensorValue
         ), 200);
     }
 
