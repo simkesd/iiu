@@ -53,14 +53,21 @@ class ActuatorController extends \BaseController
 
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      *
      * @param  int $id
      * @return Response
      */
-    public function edit($id)
+    public function show($id)
     {
-        //
+        // Make sure current user owns the requested resource
+        $sensor = Actuator::where('id', $id)
+            ->take(1)
+            ->get();
+
+        return Response::json(array(
+            'error' => false,
+            'actuator' => $sensor->first()), 200);
     }
 
 
