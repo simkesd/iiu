@@ -9,11 +9,13 @@ imarApp.config(['$routeProvider',
         $routeProvider.
             when('/sensor', {
                 templateUrl: 'partials/sensor-list.html',
-                controller: 'sensorListCtrl'
+                controller: 'sensorListCtrl',
+                activeTab: 'sensor-list'
             }).
             when('/sensor-add', {
                 templateUrl: 'partials/sensor-add.html',
-                controller: 'sensorAddCtrl'
+                controller: 'sensorAddCtrl',
+                activeTab: 'sensor-add'
             }).
             when('/sensor/:id', {
                 templateUrl: 'partials/sensor.html',
@@ -21,15 +23,18 @@ imarApp.config(['$routeProvider',
             }).
             when('/sensor/:id/values', {
                 templateUrl: 'partials/sensor-values.html',
-                controller: 'sensorSingleValuesCtrl'
+                controller: 'sensorSingleValuesCtrl',
+                activeTab: 'sensor-values'
             }).
             when('/actuator', {
                 templateUrl: 'partials/actuator-list.html',
-                controller: 'actuatorListCtrl'
+                controller: 'actuatorListCtrl',
+                activeTab: 'actuator-list'
             }).
             when('/actuator-add', {
                 templateUrl: 'partials/actuator-add.html',
-                controller: 'actuatorAddCtrl'
+                controller: 'actuatorAddCtrl',
+                activeTab: 'actuator-add'
             }).
             when('/actuator/:id', {
                 templateUrl: 'partials/actuator.html',

@@ -50,7 +50,42 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             console.log(response);
             $scope.sensorValues = response.sensorValues;
             $scope.sensor = response.sensor;
+            $scope.dates = [];
+            $scope.data = [];
+
+            for(var i = 0; i < $scope.sensorValues.length; i++) {
+                // Split timestamp into [ Y, M, D, h, m, s ]
+                var t = $scope.sensorValues[i].created_at.split(/[- :]/);
+
+                // Apply each element to the Date function
+                var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                //console.log(date);
+                //var month = date.toLocaleString("en-US", { month: "long" });
+                //var day = date.getDay();
+                $scope.dates.push([date.getTime(), parseInt($scope.sensorValues[i].value)]);
+
+                $scope.data.push({
+                    period: date.getTime(),
+                    value: parseInt($scope.sensorValues[i].value)
+                })
+            }
+
+            console.log($scope.data);
+            Morris.Line({
+                element: 'morris-area-chart',
+                data: $scope.data,
+                xkey: 'period',
+                ykeys: ['value'],
+                //xkey: $scope.data[0].period - 2000,
+                labels: [$scope.sensor.value_type],
+                pointSize: 4,
+                hideHover: 'auto',
+                resize: true
+            });
+
         });
+
+
     }]);
 
 imarControllers.controller('actuatorAddCtrl', ['$scope', '$http', 'Actuator',

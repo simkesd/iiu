@@ -24,7 +24,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="sensor in sensors" class="clickable-row odd gradeX" ng-click="redirect('/sensor/'+sensor.id)">
+                        <tr ng-repeat="sensor in sensors" class="clickable-row odd gradeX" ng-click="redirect('/sensor/'+sensor.id + '/values')">
                             <td>{{ sensor.id }}</td>
                             <td>{{ sensor.name }}</td>
                             <td>{{ sensor.value_type }}</td>
