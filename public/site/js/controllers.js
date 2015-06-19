@@ -1,17 +1,19 @@
 var imarControllers = angular.module('imarControllers', []);
 
-imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor',
-    function ($scope, $http, Sensor) {
+imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor', 'Util',
+    function ($scope, $http, Sensor, Util) {
         console.log('sensor controller called');
+        $scope.redirect = Util.redirect;
         Sensor.get({}, function (response) {
             $scope.sensors = response.sensors;
             console.log(response.sensors);
         });
     }]);
 
-imarControllers.controller('actuatorListCtrl', ['$scope', '$http', 'Actuator',
-    function ($scope, $http, Actuator) {
+imarControllers.controller('actuatorListCtrl', ['$scope', '$http', 'Actuator', 'Util',
+    function ($scope, $http, Actuator, Util) {
         Actuator.get({}, function (response) {
+            $scope.redirect = Util.redirect;
             $scope.actuators = response.actuators;
             console.log(response.actuators);
         });

@@ -20,7 +20,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="actuator in actuators" class="odd gradeX">
+                        <tr ng-repeat="actuator in actuators" class="clickable-row odd gradeX" ng-click="redirect('/actuator/' + actuator.id)">
                             <td>#</td>
                             <td>{{ actuator.id }}</td>
                             <td>{{ actuator.name }}</td>

@@ -9,3 +9,12 @@ imarServices.factory('Actuator', ['$resource',
     function($resource){
         return $resource('http://imar.local/api/v1.0/actuator/:id', {});
     }]);
+
+imarServices.factory('Util', ['$location',
+    function($location){
+        return {
+            redirect: function(path){
+                $location.path(path);
+            }
+        };
+    }]);

@@ -18,17 +18,17 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>id</th>
                             <th>Name</th>
                             <th>Value type</th>
+                            <th>id</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="sensor in sensors" class="odd gradeX">
-                            <td>#</td>
+                        <tr ng-repeat="sensor in sensors" class="clickable-row odd gradeX" ng-click="redirect('/sensor/'+sensor.id)">
                             <td>{{ sensor.id }}</td>
                             <td>{{ sensor.name }}</td>
                             <td>{{ sensor.value_type }}</td>
+                            <td>{{ $index + 1}}</td>
                         </tr>
 
                         </tbody>
