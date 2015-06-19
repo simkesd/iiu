@@ -5,6 +5,11 @@ imarServices.factory('Sensor', ['$resource',
         return $resource('http://imar.local/api/v1.0/sensor/:id', {});
     }]);
 
+imarServices.factory('SensorValues', ['$resource',
+    function($resource){
+        return $resource('http://imar.local/api/v1.0/sensor/:id/values', {});
+    }]);
+
 imarServices.factory('Actuator', ['$resource',
     function($resource){
         return $resource('http://imar.local/api/v1.0/actuator/:id', {});

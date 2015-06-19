@@ -42,6 +42,19 @@ imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Senso
         });
     }]);
 
+imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','Sensor', 'SensorValues',
+    function ($scope, $routeParams,Sensor, SensorValues) {
+        console.log('sensor single values controller called');
+        //$scope.redirect = Util.redirect;
+        Sensor.get({id: $routeParams.id}, function (response) {
+            console.log(response);
+            $scope.sensor = response.sensor;
+        });
+        SensorValues.get({id: $routeParams.id}, function (response) {
+            console.log(response);
+        });
+    }]);
+
 imarControllers.controller('actuatorAddCtrl', ['$scope', '$http', 'Actuator',
     function ($scope, $http, Actuator) {
         console.log('actuator add controller called');

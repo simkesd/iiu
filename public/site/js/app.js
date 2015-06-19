@@ -19,6 +19,10 @@ imarApp.config(['$routeProvider',
                 templateUrl: 'partials/sensor.html',
                 controller: 'sensorSingleCtrl'
             }).
+            when('/sensor/:id/values', {
+                templateUrl: 'partials/sensor-values.html',
+                controller: 'sensorSingleValuesCtrl'
+            }).
             when('/actuator', {
                 templateUrl: 'partials/actuator-list.html',
                 controller: 'actuatorListCtrl'
