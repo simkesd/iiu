@@ -11,6 +11,7 @@ class SensorValueController extends \BaseController
     public function index($id)
     {
         $sensorValues = SensorValue::where('sensor_id', $id)
+            ->with('sensor')
             ->get();
 
         return Response::json(array(

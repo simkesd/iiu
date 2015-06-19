@@ -20,4 +20,9 @@ class Sensor extends Eloquent
 
     );
 
+    public function values()
+    {
+        return $this->hasMany('SensorValues');
+    }
+
 }

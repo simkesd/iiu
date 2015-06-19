@@ -16,5 +16,10 @@ class SensorValue extends Eloquent
     protected $table = 'sensor_values';
 
 
+    public function sensor()
+    {
+        return $this->belongsTo('Sensor');
+    }
+
 
 }
