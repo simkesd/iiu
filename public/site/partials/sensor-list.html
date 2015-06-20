@@ -20,6 +20,7 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Value type</th>
+                            <th>Current</th>
                             <th>id</th>
                         </tr>
                         </thead>
@@ -28,6 +29,7 @@
                             <td>{{ sensor.id }}</td>
                             <td>{{ sensor.name }}</td>
                             <td>{{ sensor.value_type }}</td>
+                            <td>{{ sensor.latest_value + sensor.value_type }}</td>
                             <td>{{ $index + 1}}</td>
                         </tr>
 
