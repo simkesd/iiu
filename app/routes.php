@@ -43,6 +43,12 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
     Route::group(array('prefix' => 'actuator'), function()
     {
         Route::get('power', 'ActuatorController@power');
+
+        Route::get('{id}/values', 'ActuatorValueController@index');
+        Route::get('{id}/values/{valueId}', 'ActuatorValueController@show');
+        Route::post('{id}/values', 'ActuatorValueController@store');
+        Route::put('{id}/values/{valueId}', 'ActuatorValueController@update');
+        Route::delete('{id}/values/{valueId}', 'ActuatorValueController@destroy');
     });
     Route::resource('actuator', 'ActuatorController');
 });

@@ -7,20 +7,21 @@ class ActuatorValueController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($id)
 	{
-		//
-	}
+        $actuatorValues = ActuatorValue::where('actuator_id', $id)
+            ->get();
 
+        $actuator = Actuator::find($id);
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
+        return Response::json(array(
+            'error' => false,
+            'actuatorValues' => $actuatorValues,
+            'latest_value' => ActuatorValue::where('actuator_id', '=', $actuator->id)
+                ->orderBy('created_at', 'desc')
+                ->first(),
+            'actuator' => Actuator::find($id)
+        ), 200);
 	}
 
 
@@ -29,35 +30,44 @@ class ActuatorValueController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store($id)
 	{
-		//
+        $actuatorValue = new ActuatorValue();
+
+        $actuatorValue->value = Request::get('value');
+        $actuatorValue->actuator_id = $id;
+
+        // Validation and Filtering is sorely needed!!
+        // Seriously, I'm a bad person for leaving that out.
+
+        $actuatorValue->save();
+
+        return Response::json(array(
+            'error' => false,
+            'actuators' => $actuatorValue->toArray()),
+            200
+        );
 	}
 
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return Response
+     */
+    public function show($id, $valueId)
+    {
+        $actuatorValue = ActuatorValue::where('actuator_id', $id)
+            ->where('id', $valueId)
+            ->take(1)
+            ->get();
 
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
+        return Response::json(array(
+            'error' => false,
+            'actuator' => $actuatorValue
+        ), 200);
+    }
 
 	/**
 	 * Update the specified resource in storage.
@@ -65,9 +75,21 @@ class ActuatorValueController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($id, $valueId)
 	{
-		//
+        $actuatorValue = ActuatorValue::where('actuator_id', $id)->find($valueId);
+
+        if (Request::get('value')) {
+            $actuatorValue->value = Request::get('value');
+        }
+
+        $actuatorValue->save();
+
+        return Response::json(array(
+            'error' => false,
+            'message' => 'Actuator updated',
+            'details' => $actuatorValue->toArray()
+        ), 200);
 	}
 
 
@@ -77,9 +99,27 @@ class ActuatorValueController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy($id, $valueId)
 	{
-		//
+        $actuatorValue = ActuatorValue::where('actuator_id', $id)
+            ->find($valueId);
+
+        if($actuatorValue) {
+            $actuatorValueBackup = $actuatorValue;
+
+            $actuatorValue->delete();
+
+            return Response::json(array(
+                'error' => false,
+                'message' => 'Actuator deleted',
+                'details' => $actuatorValueBackup->toArray()
+            ), 200);
+        }else {
+            return Response::json(array(
+                'error' => true,
+                'message' => 'Actuator with given id not found.'
+            ), 404);
+        }
 	}
 
 
