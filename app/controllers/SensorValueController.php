@@ -38,6 +38,9 @@ class SensorValueController extends \BaseController
 
         $sensorValue->save();
 
+        $sensorValue->sensor->latest_value = $sensorValue->value;
+        $sensorValue->sensor->save();
+
         return Response::json(array(
             'error' => false,
             'sensors' => $sensorValue->toArray()),
