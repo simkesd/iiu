@@ -66,9 +66,15 @@ class SensorController extends \BaseController
             ->take(1)
             ->get();
 
+        $latest_value = SensorValue::where('sensor_id', '=', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
         return Response::json(array(
             'error' => false,
-            'sensor' => $sensor->first()), 200);
+            'sensor' => $sensor->first(),
+            'latest_value' => $latest_value
+        ), 200);
     }
 
 
