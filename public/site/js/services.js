@@ -23,3 +23,8 @@ imarServices.factory('Util', ['$location',
             }
         };
     }]);
+
+imarServices.factory('ActuatorValues', ['$resource',
+    function($resource){
+        return $resource('http://imar.local/api/v1.0/actuator/:id/values', {});
+    }]);

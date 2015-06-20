@@ -15,15 +15,17 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>id</th>
                             <th>Name</th>
+                            <th>Created at</th>
+                            <th>id</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="actuator in actuators" class="clickable-row odd gradeX" ng-click="redirect('/actuator/' + actuator.id)">
+                        <tr ng-repeat="actuator in actuators" class="clickable-row odd gradeX" ng-click="redirect('/actuator/' + actuator.id + '/values')">
                             <td>#</td>
-                            <td>{{ actuator.id }}</td>
                             <td>{{ actuator.name }}</td>
+                            <td>{{ actuator.created_at }}</td>
+                            <td>{{ actuator.id }}</td>
                         </tr>
 
                         </tbody>

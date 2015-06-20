@@ -40,6 +40,11 @@ imarApp.config(['$routeProvider',
                 templateUrl: 'partials/actuator.html',
                 controller: 'actuatorSingleCtrl'
             }).
+            when('/actuator/:id/values', {
+                templateUrl: 'partials/actuator-values.html',
+                controller: 'actuatorSingleValuesCtrl',
+                activeTab: 'actuator-values'
+            }).
             otherwise({
                 redirectTo: '/'
             });
