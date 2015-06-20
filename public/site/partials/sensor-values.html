@@ -6,7 +6,8 @@
 </div>
 <!-- /.row -->
 
-<h3>Current: {{ sensor.latest_value + sensor.value_type }}</h3>
+<h3 ng-if="sensor.latest_value.value != null">Current: {{ sensor.latest_value.value + sensor.value_type }}</h3>
+<h3 ng-if="sensor.latest_value.value == null">Current: NaN</h3>
 <br/>
 
 <div class="row">

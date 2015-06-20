@@ -22,6 +22,12 @@ class SensorController extends \BaseController
 
         $sensors = $sensors->get();
 
+        foreach($sensors as $key =>$sensor) {
+            $sensor->latest_value = SensorValue::where('sensor_id', '=', $sensor->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }
+
         return Response::json(array(
             'error' => false,
             'sensors' => $sensors
@@ -63,17 +69,15 @@ class SensorController extends \BaseController
     {
         // Make sure current user owns the requested resource
         $sensor = Sensor::where('id', $id)
-            ->take(1)
-            ->get();
+            ->first();
 
-        $latest_value = SensorValue::where('sensor_id', '=', $id)
+        $sensor->latest_value = SensorValue::where('sensor_id', '=', $id)
             ->orderBy('created_at', 'desc')
             ->first();
 
         return Response::json(array(
             'error' => false,
-            'sensor' => $sensor->first(),
-            'latest_value' => $latest_value
+            'sensor' => $sensor
         ), 200);
     }
 

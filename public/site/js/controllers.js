@@ -50,6 +50,7 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             console.log(response);
             $scope.sensorValues = response.sensorValues;
             $scope.sensor = response.sensor;
+            $scope.sensor.latest_value = response.latest_value;
             $scope.dates = [];
             $scope.data = [];
 

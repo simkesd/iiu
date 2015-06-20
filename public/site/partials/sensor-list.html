@@ -29,7 +29,12 @@
                             <td>{{ sensor.id }}</td>
                             <td>{{ sensor.name }}</td>
                             <td>{{ sensor.value_type }}</td>
-                            <td>{{ sensor.latest_value + sensor.value_type }}</td>
+                            <td ng-if="sensor.latest_value.value == null">
+                                NaN
+                            </td>
+                            <td ng-if="sensor.latest_value.value != null">
+                                {{ sensor.latest_value.value + sensor.value_type }}
+                            </td>
                             <td>{{ $index + 1}}</td>
                         </tr>
 

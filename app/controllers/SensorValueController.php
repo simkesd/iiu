@@ -13,9 +13,14 @@ class SensorValueController extends \BaseController
         $sensorValues = SensorValue::where('sensor_id', $id)
             ->get();
 
+        $sensor = Sensor::find($id);
+
         return Response::json(array(
             'error' => false,
             'sensorValues' => $sensorValues,
+            'latest_value' => SensorValue::where('sensor_id', '=', $sensor->id)
+                ->orderBy('created_at', 'desc')
+                ->first(),
             'sensor' => Sensor::find($id)
         ), 200);
     }
@@ -37,9 +42,6 @@ class SensorValueController extends \BaseController
         // Seriously, I'm a bad person for leaving that out.
 
         $sensorValue->save();
-
-        $sensorValue->sensor->latest_value = $sensorValue->value;
-        $sensorValue->sensor->save();
 
         return Response::json(array(
             'error' => false,
