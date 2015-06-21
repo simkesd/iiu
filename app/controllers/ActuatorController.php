@@ -20,9 +20,17 @@ class ActuatorController extends \BaseController
             $actuators->where('updated_at', '<', new DateTime(Request::get('to')));
         }
 
+        $actuators = $actuators->get();
+
+        foreach($actuators as $key => $actuator) {
+            $actuator->latest_value = SensorValue::where('sensor_id', '=', $actuator->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }
+
         return Response::json(array(
             'error' => false,
-            'actuators' => $actuators->get()
+            'actuators' => $actuators
         ), 200);
 
     }
@@ -61,13 +69,13 @@ class ActuatorController extends \BaseController
     public function show($id)
     {
         // Make sure current user owns the requested resource
-        $sensor = Actuator::where('id', $id)
+        $actuator = Actuator::where('id', $id)
             ->take(1)
             ->get();
 
         return Response::json(array(
             'error' => false,
-            'actuator' => $sensor->first()), 200);
+            'actuator' => $actuator->first()), 200);
     }
 
 
