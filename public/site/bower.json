@@ -39,6 +39,7 @@
     "flot.tooltip": "~0.8.4",
     "angular": "~1.4.0",
     "angular-route": "~1.4.0",
-    "angular-resource": "~1.4.0"
+    "angular-resource": "~1.4.0",
+    "eonasdan-bootstrap-datetimepicker": "~4.14.30"
   }
 }
