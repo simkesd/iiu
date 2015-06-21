@@ -84,8 +84,8 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
                 resize: true
             });
 
-            $('#start-time').datetimepicker();
-            $('#end-time').datetimepicker();
+            $('#start-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
+            $('#end-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
         });
 
 
