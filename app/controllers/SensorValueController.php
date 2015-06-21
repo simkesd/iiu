@@ -10,8 +10,20 @@ class SensorValueController extends \BaseController
      */
     public function index($id)
     {
-        $sensorValues = SensorValue::where('sensor_id', $id)
-            ->get();
+        $sensorValues = SensorValue::where('sensor_id', $id);
+
+        if (Request::get('from')) {
+            $from = urldecode(Request::get('from'));
+            $sensorValues->where('created_at', '>', $from);
+        }
+
+
+        if (Request::get('to')) {
+            $to = urldecode(Request::get('to'));
+            $sensorValues->where('created_at', '<', $to);
+        }
+
+        $sensorValues = $sensorValues->get();
 
         $sensor = Sensor::find($id);
 

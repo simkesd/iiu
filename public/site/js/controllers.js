@@ -53,6 +53,7 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             $scope.sensor.latest_value = response.latest_value;
             $scope.dates = [];
             $scope.data = [];
+            $scope.chart;
 
             for(var i = 0; i < $scope.sensorValues.length; i++) {
                 // Split timestamp into [ Y, M, D, h, m, s ]
@@ -72,7 +73,7 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             }
 
             console.log($scope.data);
-            Morris.Line({
+            $scope.chart = Morris.Line({
                 element: 'morris-area-chart',
                 data: $scope.data,
                 xkey: 'period',
@@ -86,14 +87,55 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
 
             $('#start-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
             $("#start-time").on("dp.change", function (e) {
-                //$('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+                console.log(new Date());
+                $('#end-time').data("DateTimePicker").minDate(e.date);
+
                 var fromDateTime = $(this).find('input').val();
-                SensorValues.get({id: $routeParams.id, from: fromDateTime}, function (response) {
-                    console.log(response);
+                var fromDateTimeUrlEncoded = encodeURIComponent(fromDateTime);
+                SensorValues.get({id: $routeParams.id, from: fromDateTimeUrlEncoded}, function (response) {
+                    $scope.sensorValues = response.sensorValues;
+                    $scope.sensor = response.sensor;
+                    $scope.sensor.latest_value = response.latest_value;
+                    $scope.dates = [];
+                    $scope.data = [];
+
+                    for(var i = 0; i < $scope.sensorValues.length; i++) {
+                        // Split timestamp into [ Y, M, D, h, m, s ]
+                        var t = $scope.sensorValues[i].created_at.split(/[- :]/);
+
+                        // Apply each element to the Date function
+                        var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                        //console.log(date);
+                        //var month = date.toLocaleString("en-US", { month: "long" });
+                        //var day = date.getDay();
+                        $scope.dates.push([date.getTime(), parseInt($scope.sensorValues[i].value)]);
+
+                        $scope.data.push({
+                            period: date.getTime(),
+                            value: parseInt($scope.sensorValues[i].value)
+                        })
+                    }
+
+                    $scope.chart.setData($scope.data);
                 });
             });
 
             $('#end-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
+            $("#end-time").on("dp.change", function (e) {
+                $('#start-time').data("DateTimePicker").maxDate(e.date);
+
+                var fromDateTime = $(this).find('input').val();
+                var fromDateTimeUrlEncoded = encodeURIComponent(fromDateTime);
+
+                var toDateTime = $(this).find('input').val();
+                var toDateTimeUrlEncoded = encodeURIComponent(toDateTime);
+                SensorValues.get({id: $routeParams.id, to: toDateTimeUrlEncoded}, function (response) {
+                    $scope.sensorValues = response.sensorValues;
+                    $scope.sensor = response.sensor;
+                    $scope.sensor.latest_value = response.latest_value;
+                });
+            });
+
         });
 
 

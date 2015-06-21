@@ -13,7 +13,8 @@ class SensorController extends \BaseController
         $sensors = Sensor::orderBy('created_at');
 
         if(Request::get('from')) {
-            $sensors->where('updated_at', '>', new DateTime(Request::get('from')));
+            $from = urldecode(Request::get('from'));
+            $sensors->where('updated_at', '>', new DateTime($from));
         }
 
         if(Request::get('to')) {
