@@ -17,14 +17,16 @@
                             <th>#</th>
                             <th>Name</th>
                             <th>Created at</th>
+                            <th>Current state</th>
                             <th>id</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr ng-repeat="actuator in actuators" class="clickable-row odd gradeX" ng-click="redirect('/actuator/' + actuator.id + '/values')">
-                            <td>#</td>
+                            <td>{{ $index + 1 }}</td>
                             <td>{{ actuator.name }}</td>
                             <td>{{ actuator.created_at }}</td>
+                            <td>{{ actuator.latest_value.value ? 'Off' : 'On' }}</td>
                             <td>{{ actuator.id }}</td>
                         </tr>
 

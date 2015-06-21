@@ -15,7 +15,7 @@ imarControllers.controller('actuatorListCtrl', ['$scope', '$http', 'Actuator', '
         Actuator.get({}, function (response) {
             $scope.redirect = Util.redirect;
             $scope.actuators = response.actuators;
-            console.log(response.actuators);
+            console.log(response);
         });
     }]);
 
