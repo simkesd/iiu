@@ -85,6 +85,14 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             });
 
             $('#start-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
+            $("#start-time").on("dp.change", function (e) {
+                //$('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+                var fromDateTime = $(this).find('input').val();
+                SensorValues.get({id: $routeParams.id, from: fromDateTime}, function (response) {
+                    console.log(response);
+                });
+            });
+
             $('#end-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
         });
 
