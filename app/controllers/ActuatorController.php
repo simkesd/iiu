@@ -115,33 +115,30 @@ class ActuatorController extends \BaseController
         return $innerHTML;
     }
 
-    public function power()
+    public function getElectricityPrices()
     {
-        libxml_use_internal_errors(true);
-        $url = "http://www.servisinfo.com/cena-struje";
+        $client = new \GuzzleHttp\Client([
+            // Base URI is used with relative requests
+            'base_uri' => 'http://happyfist.co:8081/',
+            // You can set any number of default request options.
+            'timeout'  => 2.0,
+        ]);
+
+        $response = $client->get('scrape');
+//        foreach ($response->getHeaders() as $name => $values) {
+//            echo $name . ': ' . implode(', ', $values) . "\r\n";
+//        }
+
+//        libxml_use_internal_errors(true);
+        $url = "http://happyfist.co:8081/scrape";
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
         $output = curl_exec($curl);
         curl_close($curl);
 
-        $DOM = new DOMDocument;
-        $DOM->loadHTML($output);
+        $jsonResponse = json_decode($output);
 
-//get all H1
-        $items = $DOM->getElementsByTagName('tr');
-
-//display all H1 text
-        for ($i = 0; $i < $items->length; $i++) {
-            echo $items->item($i)->nodeValue . "|   <br/>";
-        }
-
-//        var_dump(DOMDocument::saveHTML($doc->getElementsByTagName('tbody')));
-//        $xpath = new DOMXPath($doc);
-//
-//        $query = "//div[@class='statusup']";
-//
-//        $entries = $xpath->query($query);
-//        var_dump($entries->item(0)->textContent);
+        return $jsonResponse;
     }
 
 
