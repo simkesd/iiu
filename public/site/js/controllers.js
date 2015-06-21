@@ -84,6 +84,8 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
                 resize: true
             });
 
+            $('#start-time').datetimepicker();
+            $('#end-time').datetimepicker();
         });
 
 
@@ -151,7 +153,6 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                 hideHover: 'auto',
                 resize: true
             });
-
         });
 
 
