@@ -32,6 +32,19 @@ imarControllers.controller('sensorAddCtrl', ['$scope', '$http', 'Sensor',
         };
     }]);
 
+imarControllers.controller('sensorValueAddCtrl', ['$scope', '$routeParams', 'Sensor', 'SensorValues',
+    function ($scope, $routeParams, Sensor, SensorValues) {
+        console.log('sensor value add controller called');
+        $scope.sensorValue = {};
+        $scope.master = {};
+
+        $scope.update = function (sensorValue) {
+            $scope.master = angular.copy(sensorValue);
+            $scope.master.sensor_id = $routeParams.id;
+            SensorValues.save({id: $routeParams.id, value: sensorValue.value}, sensorValue);
+        };
+    }]);
+
 imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Sensor',
     function ($scope, $routeParams, Sensor) {
         console.log('sensor add controller called');

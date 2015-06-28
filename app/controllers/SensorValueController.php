@@ -43,12 +43,12 @@ class SensorValueController extends \BaseController
      *
      * @return Response
      */
-    public function store()
+    public function store($sensorId)
     {
         $sensorValue = new SensorValue();
 
         $sensorValue->value = Request::get('value');
-        $sensorValue->sensor_id = Request::get('sensor_id');
+        $sensorValue->sensor_id = $sensorId;
 
         // Validation and Filtering is sorely needed!!
         // Seriously, I'm a bad person for leaving that out.
