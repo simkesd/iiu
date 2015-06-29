@@ -12,15 +12,6 @@ class SensorController extends \BaseController
     {
         $sensors = Sensor::orderBy('created_at');
 
-        if(Request::get('from')) {
-            $from = urldecode(Request::get('from'));
-            $sensors->where('updated_at', '>', new DateTime($from));
-        }
-
-        if(Request::get('to')) {
-            $sensors->where('updated_at', '<', new DateTime(Request::get('to')));
-        }
-
         $sensors = $sensors->get();
 
         foreach($sensors as $key =>$sensor) {
@@ -128,14 +119,6 @@ class SensorController extends \BaseController
             'error' => false,
             'message' => 'Sensor deleted',
             'details' => $sensorBackup->toArray()
-        ), 200);
-    }
-
-    public function predict($id)
-    {
-        return Response::json(array(
-            'error' => false,
-            'message' => 'Sensor prediction for ' . $id,
         ), 200);
     }
 

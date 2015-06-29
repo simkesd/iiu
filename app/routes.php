@@ -28,8 +28,6 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
      */
     Route::group(array('prefix' => 'sensor'), function()
     {
-        Route::get('{id}/predict', 'SensorController@predict');
-
         Route::get('{id}/values', 'SensorValueController@index');
         Route::get('{id}/values/{valueId}', 'SensorValueController@show');
         Route::post('{id}/values', 'SensorValueController@store');
