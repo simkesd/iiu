@@ -9,8 +9,20 @@ class ActuatorValueController extends \BaseController {
 	 */
 	public function index($id)
 	{
-        $actuatorValues = ActuatorValue::where('actuator_id', $id)
-            ->get();
+        $actuatorValues = ActuatorValue::where('actuator_id', $id);
+
+        if (Request::get('from')) {
+            $from = urldecode(Request::get('from'));
+            $actuatorValues->where('created_at', '>', $from);
+        }
+
+
+        if (Request::get('to')) {
+            $to = urldecode(Request::get('to'));
+            $actuatorValues->where('created_at', '<', $to);
+        }
+
+        $actuatorValues = $actuatorValues->get();
 
         $actuator = Actuator::find($id);
 
