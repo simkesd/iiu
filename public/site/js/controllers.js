@@ -43,11 +43,6 @@ imarControllers.controller('sensorValueAddCtrl', ['$scope', '$routeParams', 'Sen
             $scope.master.sensor_id = $routeParams.id;
             SensorValues.save({id: $routeParams.id, value: sensorValue.value}, sensorValue);
         };
-
-        Sensor.get({id: $routeParams.id}, function (response) {
-            console.log(response);
-            $scope.sensor = response.sensor;
-        });
     }]);
 
 imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Sensor',
