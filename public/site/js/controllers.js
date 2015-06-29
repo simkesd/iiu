@@ -200,10 +200,12 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
     }]);
 
 
-imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues',
-    function ($scope, $routeParams, actuator, ActuatorValues) {
+imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route',
+    function ($scope, $routeParams, actuator, ActuatorValues, $route) {
         console.log('actuator single values controller called');
-        //$scope.redirect = Util.redirect;
+
+        $scope.chart;
+
         ActuatorValues.get({id: $routeParams.id}, function (response) {
             console.log(response);
             $scope.actuatorValues = response.actuatorValues;
@@ -230,17 +232,23 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             }
 
             console.log($scope.data);
-            Morris.Line({
+            $scope.chart = Morris.Line({
                 element: 'morris-area-chart',
                 data: $scope.data,
                 xkey: 'period',
                 ykeys: ['value'],
                 //xkey: $scope.data[0].period - 2000,
-                labels: [$scope.actuator.value_type],
+                labels: ['State'],
                 pointSize: 4,
                 hideHover: 'auto',
                 resize: true
             });
+
+            $scope.changeActuatorState = function() {
+                $scope.actuator.latest_value.value = ($scope.actuator.latest_value.value == 0) ? 1 : 0;
+                ActuatorValues.save({id: $routeParams.id, value: $scope.actuator.latest_value.value}, $scope.sensorValues);
+                $route.reload();
+            };
         });
 
 
