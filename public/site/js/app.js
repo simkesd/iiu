@@ -50,6 +50,11 @@ imarApp.config(['$routeProvider',
                 controller: 'actuatorSingleValuesCtrl',
                 activeTab: 'actuator-values'
             }).
+            when('/', {
+                templateUrl: 'partials/welcome.html',
+                controller: 'welcomeCtrl',
+                activeTab: 'welcome'
+            }).
             otherwise({
                 redirectTo: '/'
             });

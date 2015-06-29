@@ -1,5 +1,10 @@
 var imarControllers = angular.module('imarControllers', []);
 
+imarControllers.controller('welcomeCtrl', ['$scope',
+    function ($scope) {
+        console.log('welcome controller called');
+    }]);
+
 /**********************************
  **********************************
  *          SENSORS
