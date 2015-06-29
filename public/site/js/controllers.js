@@ -94,7 +94,7 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams', 
                 var fromDateTime = $('#start-time').find('input').val();
                 var toDateTime = $(this).find('input').val();
 
-                Util.handleDatePickerChangeEvent($scope, 'sensor',fromDateTime, toDateTime);
+                Util.handleDatePickerChangeEvent($scope, 'sensor', fromDateTime, toDateTime);
             });
 
         });
@@ -140,11 +140,9 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
 imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route', 'Util',
     function ($scope, $routeParams, actuator, ActuatorValues, $route, Util) {
         console.log('actuator single values controller called');
-
         $scope.chart;
 
         ActuatorValues.get({id: $routeParams.id}, function (response) {
-            console.log(response);
             $scope.actuatorValues = response.actuatorValues;
             $scope.actuator = response.actuator;
             $scope.actuator.latest_value = response.latest_value;
@@ -174,7 +172,6 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
 
             });
 
-            console.log($scope.data);
             $scope.chart = Morris.Line({
                 element: 'morris-area-chart',
                 data: $scope.data,
@@ -198,13 +195,12 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             $scope.changeActuatorState = function () {
                 $scope.actuator.latest_value.value = ($scope.actuator.latest_value.value == 0) ? 1 : 0;
                 ActuatorValues.save({
-                    id: $routeParams.id,
-                    value: $scope.actuator.latest_value.value},
-                    $scope.sensorValues).$promise.then(function() {
+                        id: $routeParams.id,
+                        value: $scope.actuator.latest_value.value
+                    },
+                    $scope.sensorValues).$promise.then(function () {
                         $route.reload();
                     });
             };
         });
-
-
     }]);
