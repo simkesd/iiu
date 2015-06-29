@@ -55,8 +55,8 @@ imarControllers.controller('sensorSingleCtrl', ['$scope', '$routeParams', 'Senso
         });
     }]);
 
-imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','Sensor', 'SensorValues',
-    function ($scope, $routeParams,Sensor, SensorValues) {
+imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams', 'Sensor', 'SensorValues',
+    function ($scope, $routeParams, Sensor, SensorValues) {
         console.log('sensor single values controller called');
         //$scope.redirect = Util.redirect;
         SensorValues.get({id: $routeParams.id}, function (response) {
@@ -68,12 +68,12 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
             $scope.data = [];
             $scope.chart;
 
-            for(var i = 0; i < $scope.sensorValues.length; i++) {
+            for (var i = 0; i < $scope.sensorValues.length; i++) {
                 // Split timestamp into [ Y, M, D, h, m, s ]
                 var t = $scope.sensorValues[i].created_at.split(/[- :]/);
 
                 // Apply each element to the Date function
-                var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
                 //console.log(date);
                 //var month = date.toLocaleString("en-US", { month: "long" });
                 //var day = date.getDay();
@@ -115,12 +115,12 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
                     $scope.dates = [];
                     $scope.data = [];
 
-                    for(var i = 0; i < $scope.sensorValues.length; i++) {
+                    for (var i = 0; i < $scope.sensorValues.length; i++) {
                         // Split timestamp into [ Y, M, D, h, m, s ]
                         var t = $scope.sensorValues[i].created_at.split(/[- :]/);
 
                         // Apply each element to the Date function
-                        var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                        var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
                         //console.log(date);
                         //var month = date.toLocaleString("en-US", { month: "long" });
                         //var day = date.getDay();
@@ -153,12 +153,12 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams','
                     $scope.dates = [];
                     $scope.data = [];
 
-                    for(var i = 0; i < $scope.sensorValues.length; i++) {
+                    for (var i = 0; i < $scope.sensorValues.length; i++) {
                         // Split timestamp into [ Y, M, D, h, m, s ]
                         var t = $scope.sensorValues[i].created_at.split(/[- :]/);
 
                         // Apply each element to the Date function
-                        var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                        var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
                         //console.log(date);
                         //var month = date.toLocaleString("en-US", { month: "long" });
                         //var day = date.getDay();
@@ -211,15 +211,17 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             $scope.actuatorValues = response.actuatorValues;
             $scope.actuator = response.actuator;
             $scope.actuator.latest_value = response.latest_value;
+            $scope.periodOn = response.periodOn;
+            $scope.periodOff = response.periodOff;
             $scope.dates = [];
             $scope.data = [];
 
-            for(var i = 0; i < $scope.actuatorValues.length; i++) {
+            for (var i = 0; i < $scope.actuatorValues.length; i++) {
                 // Split timestamp into [ Y, M, D, h, m, s ]
                 var t = $scope.actuatorValues[i].created_at.split(/[- :]/);
 
                 // Apply each element to the Date function
-                var date = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
+                var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
                 //console.log(date);
                 //var month = date.toLocaleString("en-US", { month: "long" });
                 //var day = date.getDay();
@@ -244,10 +246,22 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                 resize: true
             });
 
-            $scope.changeActuatorState = function() {
+            $scope.donutChart = Morris.Donut({
+                element: 'morris-donut-chart',
+                data: [
+                    {label: "Minutes On", value: response.periodOn},
+                    {label: "Minutes off", value: response.periodOff}
+                ]
+            });
+
+            $scope.changeActuatorState = function () {
                 $scope.actuator.latest_value.value = ($scope.actuator.latest_value.value == 0) ? 1 : 0;
-                ActuatorValues.save({id: $routeParams.id, value: $scope.actuator.latest_value.value}, $scope.sensorValues);
-                $route.reload();
+                ActuatorValues.save({
+                    id: $routeParams.id,
+                    value: $scope.actuator.latest_value.value},
+                    $scope.sensorValues).$promise.then(function() {
+                        $route.reload();
+                    });
             };
         });
 

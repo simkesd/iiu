@@ -5,7 +5,7 @@
     <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
-<h3>Current: {{ actuator.latest_value.value ? 'Off' : 'On' }}</h3>
+<h3>Current: {{ (actuator.latest_value.value = 0) ? 'Off' : 'On' }}</h3>
 <br/>
 
 <a ng-click="changeActuatorState()"><button class="btn btn-default">Change state</button></a>
@@ -67,10 +67,18 @@
                 </div>
             </div>
             <!-- /.panel-heading -->
-            <div id="sensor-values-chart" class="panel-collapse collapse in">
+            <div id="actuator-values-chart" class="panel-collapse collapse in">
                 <div class="panel-body">
                     <div class="morris-chart">
                         <div id="morris-area-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="actuator-statistics-chart" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div>Time measured: {{ periodOn + periodOff }} minutes.</div>
+                    <div class="morris-chart">
+                        <div id="morris-donut-chart"></div>
                     </div>
                 </div>
             </div>
