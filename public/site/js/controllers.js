@@ -82,19 +82,9 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams', 
                 $('#end-time').data("DateTimePicker").minDate(e.date);
 
                 var fromDateTime = $(this).find('input').val();
-                var fromDateTimeUrlEncoded = encodeURIComponent(fromDateTime);
-
                 var toDateTime = $('#end-time').find('input').val();
-                var toDateTimeUrlEncoded = encodeURIComponent(toDateTime);
 
-                SensorValues.get({id: $routeParams.id, from: fromDateTimeUrlEncoded, to: toDateTimeUrlEncoded}, function (response) {
-                    $scope.sensorValues = response.sensorValues;
-                    $scope.sensor = response.sensor;
-                    $scope.sensor.latest_value = response.latest_value;
-                    $scope.data = Util.datesFromSensorValues($scope.sensorValues);
-
-                    $scope.chart.setData($scope.data);
-                });
+                Util.handleDatePickerChangeEvent($scope, 'sensor', fromDateTime, toDateTime);
             });
 
             $('#end-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
@@ -104,7 +94,7 @@ imarControllers.controller('sensorSingleValuesCtrl', ['$scope', '$routeParams', 
                 var fromDateTime = $('#start-time').find('input').val();
                 var toDateTime = $(this).find('input').val();
 
-                Util.handleDatePickerChangeEvent($scope, fromDateTime, toDateTime);
+                Util.handleDatePickerChangeEvent($scope, 'sensor',fromDateTime, toDateTime);
             });
 
         });
@@ -147,8 +137,8 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
         });
     }]);
 
-imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route',
-    function ($scope, $routeParams, actuator, ActuatorValues, $route) {
+imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route', 'Util',
+    function ($scope, $routeParams, actuator, ActuatorValues, $route, Util) {
         console.log('actuator single values controller called');
 
         $scope.chart;
@@ -160,68 +150,17 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             $scope.actuator.latest_value = response.latest_value;
             $scope.periodOn = response.periodOn;
             $scope.periodOff = response.periodOff;
-            $scope.dates = [];
-            $scope.data = [];
-
-            for (var i = 0; i < $scope.actuatorValues.length; i++) {
-                // Split timestamp into [ Y, M, D, h, m, s ]
-                var t = $scope.actuatorValues[i].created_at.split(/[- :]/);
-
-                // Apply each element to the Date function
-                var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
-                //console.log(date);
-                //var month = date.toLocaleString("en-US", { month: "long" });
-                //var day = date.getDay();
-                $scope.dates.push([date.getTime(), parseInt($scope.actuatorValues[i].value)]);
-
-                $scope.data.push({
-                    period: date.getTime(),
-                    value: parseInt($scope.actuatorValues[i].value)
-                })
-            }
+            $scope.data = Util.datesFromSensorValues($scope.actuatorValues);
 
             $('#start-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
             $("#start-time").on("dp.change", function (e) {
                 $('#end-time').data("DateTimePicker").minDate(e.date);
 
                 var fromDateTime = $(this).find('input').val();
-                var fromDateTimeUrlEncoded = encodeURIComponent(fromDateTime);
-
                 var toDateTime = $('#end-time').find('input').val();
-                var toDateTimeUrlEncoded = encodeURIComponent(toDateTime);
 
-                ActuatorValues.get({id: $routeParams.id, from: fromDateTimeUrlEncoded, to: toDateTimeUrlEncoded}, function (response) {
-                    $scope.actuatorValues = response.actuatorValues;
-                    $scope.actuator = response.actuator;
-                    $scope.actuator.latest_value = response.latest_value;
-                    $scope.periodOn = response.periodOn;
-                    $scope.periodOff = response.periodOff;
-                    $scope.dates = [];
-                    $scope.data = [];
+                Util.handleDatePickerChangeEvent($scope, 'actuator', fromDateTime, toDateTime);
 
-                    for (var i = 0; i < $scope.actuatorValues.length; i++) {
-                        // Split timestamp into [ Y, M, D, h, m, s ]
-                        var t = $scope.actuatorValues[i].created_at.split(/[- :]/);
-
-                        // Apply each element to the Date function
-                        var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
-                        //console.log(date);
-                        //var month = date.toLocaleString("en-US", { month: "long" });
-                        //var day = date.getDay();
-                        $scope.dates.push([date.getTime(), parseInt($scope.actuatorValues[i].value)]);
-
-                        $scope.data.push({
-                            period: date.getTime(),
-                            value: parseInt($scope.actuatorValues[i].value)
-                        })
-                    }
-
-                    $scope.chart.setData($scope.data);
-                    $scope.donutChart.setData([
-                        {label: "Minutes On", value: response.periodOn},
-                        {label: "Minutes off", value: response.periodOff}
-                    ]);
-                });
             });
 
             $('#end-time').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss'});
@@ -229,43 +168,10 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                 $('#start-time').data("DateTimePicker").maxDate(e.date);
 
                 var fromDateTime = $('#start-time').find('input').val();
-                var fromDateTimeUrlEncoded = encodeURIComponent(fromDateTime);
-
                 var toDateTime = $(this).find('input').val();
-                var toDateTimeUrlEncoded = encodeURIComponent(toDateTime);
 
-                ActuatorValues.get({id: $routeParams.id, to: toDateTimeUrlEncoded}, function (response) {
-                    $scope.actuatorValues = response.actuatorValues;
-                    $scope.actuator = response.actuator;
-                    $scope.actuator.latest_value = response.latest_value;
-                    $scope.periodOn = response.periodOn;
-                    $scope.periodOff = response.periodOff;
-                    $scope.dates = [];
-                    $scope.data = [];
+                Util.handleDatePickerChangeEvent($scope, 'actuator', fromDateTime, toDateTime);
 
-                    for (var i = 0; i < $scope.actuatorValues.length; i++) {
-                        // Split timestamp into [ Y, M, D, h, m, s ]
-                        var t = $scope.actuatorValues[i].created_at.split(/[- :]/);
-
-                        // Apply each element to the Date function
-                        var date = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
-                        //console.log(date);
-                        //var month = date.toLocaleString("en-US", { month: "long" });
-                        //var day = date.getDay();
-                        $scope.dates.push([date.getTime(), parseInt($scope.actuatorValues[i].value)]);
-
-                        $scope.data.push({
-                            period: date.getTime(),
-                            value: parseInt($scope.actuatorValues[i].value)
-                        })
-                    }
-
-                    $scope.chart.setData($scope.data);
-                    $scope.donutChart.setData([
-                        {label: "Minutes On", value: response.periodOn},
-                        {label: "Minutes off", value: response.periodOff}
-                    ]);
-                });
             });
 
             console.log($scope.data);
