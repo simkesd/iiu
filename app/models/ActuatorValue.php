@@ -15,6 +15,9 @@ class ActuatorValue extends Eloquent
      */
     protected $table = 'actuator_values';
 
-
+    public function actuator()
+    {
+        return $this->belongsTo('Actuator');
+    }
 
 }

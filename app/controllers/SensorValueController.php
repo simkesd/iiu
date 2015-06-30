@@ -10,7 +10,7 @@ class SensorValueController extends \BaseController
      */
     public function index($id)
     {
-        $sensorValues = SensorValue::where('sensor_id', $id);
+        $sensorValues = SensorValue::orderBy('created_at')->where('sensor_id', $id);
 
         if (Request::get('from')) {
             $from = urldecode(Request::get('from'));

@@ -142,8 +142,8 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
         });
     }]);
 
-imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route', 'Util',
-    function ($scope, $routeParams, actuator, ActuatorValues, $route, Util) {
+imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route', 'Util', 'ElectricityPrice',
+    function ($scope, $routeParams, actuator, ActuatorValues, $route, Util, ElectricityPrice) {
         console.log('actuator single values controller called');
         $scope.chart;
 
@@ -177,17 +177,17 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
 
             });
 
-            $scope.chart = Morris.Line({
-                element: 'morris-area-chart',
-                data: $scope.data,
-                xkey: 'period',
-                ykeys: ['value'],
-                //xkey: $scope.data[0].period - 2000,
-                labels: ['State'],
-                pointSize: 4,
-                hideHover: 'auto',
-                resize: true
-            });
+            //$scope.chart = Morris.Line({
+            //    element: 'morris-area-chart',
+            //    data: $scope.data,
+            //    xkey: 'period',
+            //    ykeys: ['value'],
+            //    //xkey: $scope.data[0].period - 2000,
+            //    labels: ['State'],
+            //    pointSize: 4,
+            //    hideHover: 'auto',
+            //    resize: true
+            //});
 
             $scope.donutChart = Morris.Donut({
                 element: 'morris-donut-chart',
@@ -207,5 +207,9 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                         $route.reload();
                     });
             };
+
+            ElectricityPrice.get({id: $routeParams.id}, function (response) {
+                console.log('price', response);
+            });
         });
     }]);

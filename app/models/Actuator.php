@@ -15,6 +15,9 @@ class Actuator extends Eloquent
      */
     protected $table = 'actuators';
 
-
+    public function values()
+    {
+        return $this->hasMany('ActuatorValues');
+    }
 
 }

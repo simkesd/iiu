@@ -113,7 +113,12 @@ class SensorController extends \BaseController
         $sensor = Sensor::find($id);
         $sensorBackup = $sensor;
 
-        $sensor->delete();
+        if(!$sensor) {
+            return Response::json(array(
+                'error' => true,
+                'message' => 'Sensor doesn\'t exist',
+            ), 404);
+        }
 
         return Response::json(array(
             'error' => false,

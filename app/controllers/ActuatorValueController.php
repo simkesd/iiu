@@ -9,13 +9,12 @@ class ActuatorValueController extends \BaseController {
 	 */
 	public function index($id)
 	{
-        $actuatorValues = ActuatorValue::where('actuator_id', $id);
+        $actuatorValues = ActuatorValue::orderBy('created_at', 'desc')->where('actuator_id', $id);
 
         if (Request::get('from')) {
             $from = urldecode(Request::get('from'));
             $actuatorValues->where('created_at', '>', $from);
         }
-
 
         if (Request::get('to')) {
             $to = urldecode(Request::get('to'));
@@ -26,38 +25,13 @@ class ActuatorValueController extends \BaseController {
 
         $actuator = Actuator::find($id);
 
-        $periodOn = 0;
-        $periodOff = 0;
-        foreach($actuatorValues as $key => $actuatorValue) {
-            $dateOne =  $actuatorValue->created_at;
-            $dateTwo = (isset($actuatorValues[$key + 1])) ? $actuatorValues[$key + 1]->created_at : null;
-
-//            var_dump(array($dateOne, $dateTwo));
-
-            if($actuatorValue->value == 0) {
-                if($dateTwo) {
-                    $periodOff += $dateOne->diffInMinutes($dateTwo);
-                }else {
-                    $periodOff += $dateOne->diffInMinutes(\Carbon\Carbon::now());
-                }
-            }else {
-                if($dateTwo) {
-                    $periodOn += $dateOne->diffInMinutes($dateTwo);
-                }else {
-                    $periodOn += $dateOne->diffInMinutes(\Carbon\Carbon::now());
-                }
-            }
-        }
-
         return Response::json(array(
             'error' => false,
             'actuatorValues' => $actuatorValues,
             'latest_value' => ActuatorValue::where('actuator_id', '=', $actuator->id)
                 ->orderBy('created_at', 'desc')
                 ->first(),
-            'actuator' => Actuator::find($id),
-            'periodOn' => $periodOn,
-            'periodOff' => $periodOff
+            'actuator' => Actuator::find($id)
         ), 200);
 	}
 
@@ -73,9 +47,6 @@ class ActuatorValueController extends \BaseController {
 
         $actuatorValue->value = Request::get('value');
         $actuatorValue->actuator_id = $id;
-
-        // Validation and Filtering is sorely needed!!
-        // Seriously, I'm a bad person for leaving that out.
 
         $actuatorValue->save();
 

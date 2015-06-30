@@ -22,7 +22,7 @@ class ActuatorController extends \BaseController
 
         $actuators = $actuators->get();
 
-        foreach($actuators as $key => $actuator) {
+        foreach ($actuators as $key => $actuator) {
             $actuator->latest_value = SensorValue::where('sensor_id', '=', $actuator->id)
                 ->orderBy('created_at', 'desc')
                 ->first();
@@ -121,15 +121,11 @@ class ActuatorController extends \BaseController
             // Base URI is used with relative requests
             'base_uri' => 'http://happyfist.co:8081/',
             // You can set any number of default request options.
-            'timeout'  => 2.0,
+            'timeout' => 2.0,
         ]);
 
         $response = $client->get('scrape');
-//        foreach ($response->getHeaders() as $name => $values) {
-//            echo $name . ': ' . implode(', ', $values) . "\r\n";
-//        }
 
-//        libxml_use_internal_errors(true);
         $url = "http://happyfist.co:8081/scrape";
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
@@ -139,6 +135,72 @@ class ActuatorController extends \BaseController
         $jsonResponse = json_decode($output);
 
         return $jsonResponse;
+    }
+
+    public function calculatePrice($id)
+    {
+        if (Request::get('from')) {
+            $from = urldecode(Request::get('from'));
+        }
+
+        if (Request::get('to')) {
+            $to = urldecode(Request::get('to'));
+        }
+
+        $actuator = Actuator::find($id);
+        $actuatorValues = ActuatorValue::orderBy('created_at')->where('actuator_id', '=', $id)->get();
+
+        $timetable = array();
+
+        $prices = $this->getElectricityPrices();
+        $electricitySpent = 0;
+        $price = 0;
+        $zone = '';
+
+        foreach ($actuatorValues as $index => $actuatorValue) {
+            $key = $actuatorValue->created_at->year;
+            $key .= $actuatorValue->created_at->month;
+            $key .= $actuatorValue->created_at->day;
+
+            $periodOn = 0;
+            $periodOff = 0;
+
+            $dateOne = $actuatorValue->created_at;
+            $dateTwo = (isset($actuatorValues[$index + 1])) ? $actuatorValues[$index + 1]->created_at : null;
+
+            if ($actuatorValue->value == 1) {
+                if ($dateTwo) {
+                    $periodOn += $dateOne->diffInMinutes($dateTwo);
+                    $tempPeriodOn = $dateOne->diffInMinutes($dateTwo);
+                } else {
+                    $periodOn += $dateOne->diffInMinutes(\Carbon\Carbon::now());
+                    $tempPeriodOn = $dateOne->diffInMinutes(\Carbon\Carbon::now());
+                }
+
+                $hoursOn = ($tempPeriodOn / 60);
+                $electricitySpent +=  $hoursOn * $actuator->spending;
+                $electricitySpentInKW =  $electricitySpent/1000;
+
+//                var_dump(array(
+//                    'hoursOn' => $hoursOn,
+//                    'KWspent' => $electricitySpentInKW,
+//                    'price' => $price
+//                ));
+
+                if($electricitySpentInKW < 351) {
+                    $price += $electricitySpentInKW * $prices->zelenaZona->jednotarifno;
+                    $zone = 'green';
+                }else if($electricitySpentInKW < 1601) {
+                    $price += $electricitySpentInKW * $prices->plavaZona->jednotarifno;
+                    $zone = 'blue';
+                }else {
+                    $price += $electricitySpentInKW * $prices->crvenaZona->jednotarifno;
+                    $zone = 'red';
+                }
+            }
+        }
+
+        return Response::json(array('zone' => $zone, 'price' => $price));
     }
 
 

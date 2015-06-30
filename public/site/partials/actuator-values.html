@@ -92,22 +92,32 @@
                 </div>
             </div>
             <!-- /.panel-heading -->
-            <div id="actuator-values-chart" class="panel-collapse collapse in">
-                <div class="panel-body">
-                    <div class="morris-chart">
-                        <div id="morris-area-chart"></div>
+            <!--<div id="actuator-values-chart" class="panel-collapse collapse in">-->
+                <!--<div class="panel-body">-->
+                    <!--<div class="morris-chart">-->
+                        <!--<div id="morris-area-chart"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div>Time measured: {{ (periodOn + periodOff) / 24 }} hours.</div>
+                    <div>Electricity spent: {{ }} KW/h</div>
+                    <div>Zone entered: {{ }}</div>
+                    <div>Cost: {{  }}</div>
+                </div>
+                <div class="col-lg-6">
+                    <div id="actuator-statistics-chart" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div class="morris-chart">
+                                <div id="morris-donut-chart"></div>
+                            </div>
+                        </div>
                     </div>
+                    <!-- /.panel-body -->
                 </div>
             </div>
-            <div id="actuator-statistics-chart" class="panel-collapse collapse in">
-                <div class="panel-body">
-                    <div>Time measured: {{ periodOn + periodOff }} minutes.</div>
-                    <div class="morris-chart">
-                        <div id="morris-donut-chart"></div>
-                    </div>
-                </div>
-            </div>
-            <!-- /.panel-body -->
+
         </div>
         <!-- /.panel -->
     </div>
