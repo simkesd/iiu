@@ -17,7 +17,6 @@ class CreateActuatorValuesTable extends Migration {
             $table->increments('id');
             $table->integer('actuator_id');
             $table->string('value');
-            $table->string('power_consumption');
             $table->timestamps();
         });
     }

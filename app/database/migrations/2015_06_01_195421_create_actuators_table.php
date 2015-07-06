@@ -17,6 +17,8 @@ class CreateActuatorsTable extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->string('description');
+            $table->string('current_state');
+            $table->string('power_consumption');
             $table->timestamps();
         });
     }

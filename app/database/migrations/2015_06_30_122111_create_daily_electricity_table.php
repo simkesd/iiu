@@ -17,6 +17,7 @@ class CreateDailyElectricityTable extends Migration {
             $table->increments('id');
             $table->integer('actuator_id');
             $table->string('kw_spent');
+            $table->string('kw_spent_in_month');
             $table->string('cost');
             $table->string('current_zone');
             $table->timestamps();
