@@ -91,6 +91,17 @@ class CronController extends \BaseController
 //        echo $actuatorValues->toJson();
     }
 
+    private function calculateZone($kw)
+    {
+        if($kw < 351) {
+            return 'green';
+        }else if(1601) {
+            return 'blue';
+        }else {
+            return 'red';
+        }
+    }
+
     public function getElectricityPrices()
     {
 //        $client = new \GuzzleHttp\Client([
@@ -176,123 +187,158 @@ class CronController extends \BaseController
      *
      * @param $id
      */
-    public function calculateDay($id, $date)
+    public function calculateDay($date = null)
     {
-        if($date) {
-            $date = new \Carbon\Carbon(urldecode(Request::get('date')));
-        }else {
-            $date = new \Carbon\Carbon('now');
-        }
+        $actuators = Actuator::all();
 
-        $beginingOfTheDay = $date->copy()->subDay()->startOfDay();
-        $endOfTheDay = $date->copy()->subDay()->endOfDay()->addSecond();
+        foreach($actuators as $actuator) {
+            /*
+             * If no date param is passed, function will calculate daily electricity
+             * for the day before today
+             */
+            if($date != null) {
+                $date = new \Carbon\Carbon($date);
+            }else {
+                $date = new \Carbon\Carbon('now');
+            }
+
+            $beginingOfTheDay = $date->copy()->subDay()->startOfDay();
+            $endOfTheDay = $date->copy()->subDay()->endOfDay()->addSecond();
 
 //        var_dump([$beginingOfTheDay, $endOfTheDay]);
 
-        $actuator = Actuator::find($id);
-        $actuatorValues = ActuatorValue::orderBy('created_at', 'asc')
-            ->where('created_at', '>', $beginingOfTheDay)
-            ->where('created_at', '<', $endOfTheDay)
-            ->where('actuator_id', '=', $id)
-            ->get();
-
-        $firstOfMonth = $beginingOfTheDay->firstOfMonth();
-        $periodOn = 0;
-        $periodOff = 0;
-        $kw_spent = 0;
-        $cost = 0;
-        $current_zone = 'green';
-        $powerConsumption = $actuator->power_consumption/1000;
-
-        $prices = $this->getElectricityPrices();
-
-        if($firstOfMonth->diffInDays($beginingOfTheDay) == 0){
-            $kw_spent_in_month = 0;
-        }else {
-            $dailyBegining = $endOfTheDay->copy()->subDay()->subDay();
-            $dailyEnd = $endOfTheDay->copy()->subDay();
-            $dailyElectricity = DailyElectricity::orderBy('created_at', 'acs')
-                ->where('created_at', '>', $dailyBegining)
-                ->where('created_at', '<', $dailyEnd)
-                ->where('actuator_id', '=', $id)
+            $actuatorValues = ActuatorValue::orderBy('created_at', 'asc')
+                ->where('created_at', '>', $beginingOfTheDay)
+                ->where('created_at', '<', $endOfTheDay)
+                ->where('actuator_id', '=', $actuator->$id)
                 ->get();
-            $kw_spent_in_month = $dailyBegining->kw_spent_in_month;
-        }
 
-        if (count($actuatorValues) > 0) {
-//            echo $actuatorValues->toJson();
+            $firstOfMonth = $beginingOfTheDay->copy()->firstOfMonth();
+            $periodOn = 0;
+            $periodOff = 0;
+            $kw_spent = 0;
+            $cost = 0;
+            $current_zone = 'green';
+            $powerConsumption = $actuator->power_consumption/1000;
 
-            if ($actuatorValues[0]->value == 0) {
-                //actuator was turned on on the beginning of the day
-                $periodOnInTheBeginingOfTheDay = $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
-                $periodOn += $periodOnInTheBeginingOfTheDay;
-                $cost += $this->calculateCost($periodOnInTheBeginingOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
-                $kw_spent += $periodOnInTheBeginingOfTheDay * $powerConsumption;
-            } else {
-                //actuator was turned off on the beginning of the day
-                $periodOff += $actuatorValues[0]->created_at->diffInHours($endOfTheDay);
+            // Call the REST service for getting current electricity prices
+            $prices = $this->getElectricityPrices();
+
+            /*
+             * If it is the first of month, there is no electricity spent and we set the variable value to 0
+             * else we get the value from last daily electricity table. We are getting the daily result for
+             * day before the day we are calculating the results for. kw_spent_in_month variable
+             * contains cumulative value of spent electricity from the begining of the month
+             */
+            if($firstOfMonth->diffInDays($beginingOfTheDay) == 0){
+                $kw_spent_in_month = 0;
+            }else {
+                $dailyBegining = $endOfTheDay->copy()->subDay()->subDay();
+                $dailyEnd = $endOfTheDay->copy()->subDay();
+                $dailyElectricity = DailyElectricity::orderBy('created_at', 'acs')
+                    ->where('created_at', '<', $beginingOfTheDay)
+                    ->where('actuator_id', '=', $actuator->id)
+                    ->first();
+                $kw_spent_in_month = $dailyElectricity->kw_spent_in_month;
             }
 
-            $lastIndex = count($actuatorValues) - 1;
+            /*
+             * Two cases. If there are values for selected day, and if there are no values.
+             * If there are values we are calculating the electricity spent.
+             * If there are no values we are getting the value from last known state of actuator before selected day,
+             * and calculating the value as actuator was turned off/on the whole day.
+             */
+            if (count($actuatorValues) > 0) {
+//            echo $actuatorValues->toJson();
 
-            foreach ($actuatorValues as $key => $actuatorValue) {
-                if ($key == $lastIndex) {
-                    //already counted this period
-                    continue;
+                /*
+                 * Special case of calculating the value from the beginning of the month,
+                 * until the first value is tracked.
+                 */
+                if ($actuatorValues[0]->value == 0) {
+                    //actuator was turned on on the beginning of the day
+                    $periodOnInTheBeginingOfTheDay = $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
+                    $periodOn += $periodOnInTheBeginingOfTheDay;
+                    $cost += $this->calculateCost($periodOnInTheBeginingOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
+                    $kw_spent += $periodOnInTheBeginingOfTheDay * $powerConsumption;
                 } else {
-                    if ($actuatorValue->value == 0) {
-                        //actuator was turned on on the beginning of the day
-                        $periodOff += $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
+                    //actuator was turned off on the beginning of the day
+                    $periodOff += $actuatorValues[0]->created_at->diffInHours($endOfTheDay);
+                }
+
+                $lastIndex = count($actuatorValues) - 1;
+
+                /*
+                 * Calculating electricity spent in between the first tracked
+                 * and last tracked value in selected day
+                 */
+                foreach ($actuatorValues as $key => $actuatorValue) {
+                    if ($key == $lastIndex) {
+                        //already counted this period
+                        continue;
                     } else {
-                        //actuator was turned off on the beginning of the day
-                        $tempPeriodOn = $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
-                        $periodOn += $tempPeriodOn;
-                        $cost += $this->calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent_in_month);
-                        $kw_spent += $tempPeriodOn * $powerConsumption;
+                        if ($actuatorValue->value == 0) {
+                            //actuator was turned on on the beginning of the day
+                            $periodOff += $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
+                        } else {
+                            //actuator was turned off on the beginning of the day
+                            $tempPeriodOn = $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
+                            $periodOn += $tempPeriodOn;
+                            $cost += $this->calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent_in_month);
+                            $kw_spent += $tempPeriodOn * $powerConsumption;
+                        }
                     }
+                }
+
+                /*
+                 * Special case of calculating the value from the last tracked value,
+                 * until the end of month
+                 */
+                if ($actuatorValues[$lastIndex]->value == 0) {
+                    //actuator was turned off on the end of the month
+                    $periodOff += $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
+                } else {
+                    //actuator was turned on on the end of the month
+                    $periodOnInTheEndOfTheDay = $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
+                    $periodOn += $periodOnInTheEndOfTheDay;
+                    $cost += $this->calculateCost($periodOnInTheEndOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
+                    $kw_spent += $periodOnInTheEndOfTheDay * $powerConsumption;
+                }
+
+            } else {
+                echo 'no values for today';
+                // get current state of actuator
+
+                if($actuator->current_state = 1) {
+                    // if it is turned on, cost will exist
+                }else {
+                    // if its not costs will be null
+                    // result will be the same as previous day
                 }
             }
 
+            var_dump(array(
+                'kw_spent' => $kw_spent,
+                'kw_spent_in_month' => $kw_spent + $kw_spent_in_month,
+                'cost' => $cost,
+                'periodOff' => $periodOff,
+                'periodOn' => $periodOn,
+                'current_zone' => $this->calculateZone($kw_spent_in_month + $kw_spent)
+            ));
 
-            if ($actuatorValues[$lastIndex]->value == 0) {
-                //actuator was turned off on the end of the month
-                $periodOff += $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
-            } else {
-                //actuator was turned on on the end of the month
-                $periodOnInTheEndOfTheDay = $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
-                $periodOn += $periodOnInTheEndOfTheDay;
-                $cost += $this->calculateCost($periodOnInTheEndOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
-                $kw_spent += $periodOnInTheEndOfTheDay * $powerConsumption;
-            }
-
-        } else {
-            echo 'no values for today';
-            // get current state of actuator
-
-            if($actuator->current_state = 1) {
-                // if it is turned on, cost will exist
-            }else {
-                // if its not costs will be null
-                // result will be the same as previous day
-            }
+            DailyElectricity::create(array(
+                'actuator_id' => $id,
+                'kw_spent' => $kw_spent,
+                'kw_spent_in_month' => $kw_spent_in_month + $kw_spent,
+                'cost' => $cost,
+                'current_zone' => $this->calculateZone($kw_spent_in_month + $kw_spent)
+            ));
         }
 
-        var_dump(array(
-            'kw_spent' => $kw_spent,
-            'kw_spent_in_month' => $kw_spent + $kw_spent_in_month,
-            'cost' => $cost,
-            'periodOff' => $periodOff,
-            'periodOn' => $periodOn
-        ));
 
-        DailyElectricity::create(array(
-            'actuator_id' => $id,
-            'kw_spent' => $kw_spent,
-            'kw_spent_in_month' => $kw_spent_in_month + $kw_spent,
-            'cost' => $cost,
-            'current_zone' => $current_zone
-        ));
     }
+
+
 
 
 }
