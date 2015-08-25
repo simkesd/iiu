@@ -258,9 +258,6 @@ class Electricity extends Facade
                 $lastDaySpendings = DailyElectricity::orderBy('id', 'desc')
                     ->first();
 
-//                print_r($lastDaySpendings);
-//                exit;
-
                 if($lastDaySpendings) {
                     if($lastDaySpendings->last_value == 0) {
                         $kw_spent = 0;
