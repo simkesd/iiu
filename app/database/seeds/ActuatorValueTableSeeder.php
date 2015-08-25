@@ -6,16 +6,14 @@ class ActuatorValueTableSeeder extends Seeder {
     {
         DB::table('actuator_values')->truncate();
 
-        $createdAt = new \Carbon\Carbon('2015-07-02 10:00:00');
-        $createdAtDayBefore = new \Carbon\Carbon();
-        $createdAtDayBefore->modify('-1 day');
-        $createdAtTwoDaysBefore = new DateTime();
-        $createdAtTwoDaysBefore->modify('-2 days');
+        $createdAt = new \Carbon\Carbon();
+        $createdAt->firstOfMonth();
 
-        $updatedAt = $createdAt;
-        $updatedAtDayBefore = $createdAtDayBefore;
-        $updatedAtTwoDaysBefore = $createdAtTwoDaysBefore;
-
+        /*
+         ***********************
+         * Day one
+         ***********************
+         */
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => true,
@@ -25,87 +23,105 @@ class ActuatorValueTableSeeder extends Seeder {
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => false,
-            'created_at' => $createdAt->copy()->subHour(),
+            'created_at' => $createdAt->copy()->addHour(),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => true,
-            'created_at' => $createdAt->copy()->subHours(2),
+            'created_at' => $createdAt->copy()->addHours(2),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => false,
-            'created_at' => $createdAt->copy()->subHours(5),
+            'created_at' => $createdAt->copy()->addHours(5),
         ));
+
+        /*
+         ***********************
+         * Day two
+         ***********************
+         */
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => true,
-            'created_at' => $createdAt->copy()->subDays(1),
+            'created_at' => $createdAt->copy()->addDays(1),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => false,
-            'created_at' => $createdAt->copy()->subDays(1)->subHours(2),
+            'created_at' => $createdAt->copy()->addDays(1)->addHours(2),
         ));
 
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => true,
-            'created_at' => $createdAt->copy()->subDays(1)->subHours(5),
+            'created_at' => $createdAt->copy()->addDays(1)->addHours(5),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => false,
-            'created_at' => $createdAt->copy()->subDays(1w)->subHours(7),
+            'created_at' => $createdAt->copy()->addDays(1)->addHours(7),
         ));
-//        ActuatorValue::create(array(
-//            'actuator_id' => '3',
-//            'value' => false,
-//            'created_at' => $createdAt,
-//            'updated_at' => $updatedAt
-//        ));
-//
-//
-//        ActuatorValue::create(array(
-//            'actuator_id' => '3',
-//            'value' => true,
-//            'created_at' => $createdAtDayBefore,
-//            'updated_at' => $updatedAtDayBefore
-//        ));
-//
-//        ActuatorValue::create(array(
-//            'actuator_id' => '3',
-//            'value' => false,
-//            'created_at' => $createdAtTwoDaysBefore,
-//            'updated_at' => $updatedAtTwoDaysBefore
-//        ));
-//
-//        ActuatorValue::create(array(
-//            'actuator_id' => '4',
-//            'value' => true,
-//            'created_at' => $createdAt,
-//            'updated_at' => $updatedAt
-//        ));
-//
-//        ActuatorValue::create(array(
-//            'actuator_id' => '4',
-//            'value' => false,
-//            'created_at' => $createdAtDayBefore,
-//            'updated_at' => $updatedAtDayBefore
-//        ));
-//
-//        ActuatorValue::create(array(
-//            'actuator_id' => '4',
-//            'value' => true,
-//            'created_at' => $createdAtTwoDaysBefore,
-//            'updated_at' => $updatedAtTwoDaysBefore
-//        ));
+
+
+        /*
+         ***********************
+         * Day seven
+         ***********************
+         */
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => true,
+            'created_at' => $createdAt->copy()->addDays(7)->addHours(7),
+        ));
+
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => false,
+            'created_at' => $createdAt->copy()->addDays(7)->addHours(10),
+        ));
+
+
+        /*
+         ***********************
+         * Day three
+         ***********************
+         */
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => true,
+            'created_at' => $createdAt->copy()->addDays(3)->addHours(2),
+        ));
+
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => false,
+            'created_at' => $createdAt->copy()->addDays(3)->addHours(11),
+        ));
+
+
+        /*
+         ***********************
+         * Day eighteen
+         ***********************
+         */
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => true,
+            'created_at' => $createdAt->copy()->addDays(18)->addHours(5),
+        ));
+
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
+            'value' => false,
+            'created_at' => $createdAt->copy()->addDays(18)->addHours(16),
+        ));
     }
 
 }

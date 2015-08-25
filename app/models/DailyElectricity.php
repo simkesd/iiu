@@ -15,6 +15,8 @@ class DailyElectricity extends Eloquent
      */
     protected $table = 'daily_electricity';
 
-    protected $guarded = array();
+//    protected $guarded = array();
+    protected $fillable = array('kw_spent_in_month', 'kw_spent', 'current_zone', 'cost', 'actuator_id');
+
 
 }

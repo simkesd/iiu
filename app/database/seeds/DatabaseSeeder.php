@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder {
 		 $this->call('SensorValueTableSeeder');
 		 $this->call('ActuatorTableSeeder');
 		 $this->call('ActuatorValueTableSeeder');
+		 $this->call('DailyElectricityTableSeeder');
 	}
 
 }

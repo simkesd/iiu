@@ -1,18 +1,21 @@
 var imarServices = angular.module('imarServices', ['ngResource']);
 
+var root = 'http://imar.local';
+
+
 imarServices.factory('Sensor', ['$resource',
     function ($resource) {
-        return $resource('http://imar.local/api/v1.0/sensor/:id', {});
+        return $resource(root+'/api/v1.0/sensor/:id', {});
     }]);
 
 imarServices.factory('SensorValues', ['$resource',
     function ($resource) {
-        return $resource('http://imar.local/api/v1.0/sensor/:id/values', {});
+        return $resource('/api/v1.0/sensor/:id/values', {});
     }]);
 
 imarServices.factory('Actuator', ['$resource',
     function ($resource) {
-        return $resource('http://imar.local/api/v1.0/actuator/:id', {});
+        return $resource(root+'/api/v1.0/actuator/:id', {});
     }]);
 
 imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$routeParams',
@@ -83,10 +86,10 @@ imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$r
 
 imarServices.factory('ActuatorValues', ['$resource',
     function ($resource) {
-        return $resource('http://imar.local/api/v1.0/actuator/:id/values', {});
+        return $resource(root+'/api/v1.0/actuator/:id/values', {});
     }]);
 
 imarServices.factory('ElectricityPrice', ['$resource',
     function ($resource) {
-        return $resource('http://imar.local/api/v1.0/actuator/:id/calculatePrice', {});
+        return $resource(root+'/api/v1.0/actuator/:id/calculatePrice', {});
     }]);

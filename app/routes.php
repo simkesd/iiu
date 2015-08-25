@@ -54,4 +54,4 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
     Route::get('cron/{id}', 'CronController@index');
 });
 
-Route::get('calculateDay/{date?}', 'CronController@calculateDay');
+Route::get('calculate/{date?}', 'CronController@calculate');
