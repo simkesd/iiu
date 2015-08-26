@@ -142,10 +142,14 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
         });
     }]);
 
-imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', '$route', 'Util', 'ElectricityPrice',
-    function ($scope, $routeParams, actuator, ActuatorValues, $route, Util, ElectricityPrice) {
+imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', 'ActuatorValuesDaily', '$route', 'Util', 'ElectricityPrice',
+    function ($scope, $routeParams, actuator, ActuatorValuesDaily, ActuatorValues, $route, Util, ElectricityPrice) {
         console.log('actuator single values controller called');
         $scope.chart;
+
+        ActuatorValuesDaily.get({id: $routeParams.id}, function(response) {
+           console.log(response);
+        });
 
         ActuatorValues.get({id: $routeParams.id}, function (response) {
             $scope.actuatorValues = response.actuatorValues;

@@ -13,6 +13,12 @@ imarServices.factory('SensorValues', ['$resource',
         return $resource('/api/v1.0/sensor/:id/values', {});
     }]);
 
+imarServices.factory('ActuatorValuesDaily', ['$resource',
+    function ($resource) {
+        return $resource('/api/v1.0/actuator/:id/timeLapseData', {});
+    }]);
+
+
 imarServices.factory('Actuator', ['$resource',
     function ($resource) {
         return $resource(root+'/api/v1.0/actuator/:id', {});
