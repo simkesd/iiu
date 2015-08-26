@@ -17,25 +17,25 @@ class ActuatorValueTableSeeder extends Seeder {
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => true,
-            'created_at' => $createdAt,
-        ));
-
-        ActuatorValue::create(array(
-            'actuator_id' => '1',
-            'value' => false,
             'created_at' => $createdAt->copy()->addHour(),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
+            'value' => false,
+            'created_at' => $createdAt->copy()->addHours(3),
+        ));
+
+        ActuatorValue::create(array(
+            'actuator_id' => '1',
             'value' => true,
-            'created_at' => $createdAt->copy()->addHours(2),
+            'created_at' => $createdAt->copy()->addHours(5),
         ));
 
         ActuatorValue::create(array(
             'actuator_id' => '1',
             'value' => false,
-            'created_at' => $createdAt->copy()->addHours(5),
+            'created_at' => $createdAt->copy()->addHours(10),
         ));
 
         /*

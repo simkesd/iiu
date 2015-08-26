@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 class ActuatorTableSeeder extends Seeder {
 
@@ -10,7 +10,7 @@ class ActuatorTableSeeder extends Seeder {
             'name' => 'Window1',
             'description' => 'Windows in classroom 304',
             'current_state' => true,
-            'power_consumption' => 100
+            'power_consumption' => 100000
         ));
 
 //        Actuator::create(array(

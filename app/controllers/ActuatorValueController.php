@@ -130,5 +130,25 @@ class ActuatorValueController extends \BaseController {
         }
 	}
 
+    public function timeLapseData($id)
+    {
+        $dailyElectricity = DailyElectricity::orderBy('created_at', 'asc')->where('actuator_id', $id);
+
+        if (Request::get('from')) {
+            $from = urldecode(Request::get('from'));
+            $dailyElectricity->where('created_at', '>=', $from);
+        }
+
+        if (Request::get('to')) {
+            $to = urldecode(Request::get('to'));
+            $dailyElectricity->where('created_at', '<=', $to);
+        }
+
+        return Response::json(array(
+            'error' => false,
+            'data' => $dailyElectricity->get()
+        ));
+    }
+
 
 }

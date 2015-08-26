@@ -100,8 +100,12 @@ class CronController extends \BaseController
     {
         $date = new \Carbon\Carbon();
         $firstOfMonth = $date->firstOfMonth();
-        $res = Services\Electricity::calculateMonthly($firstOfMonth);
+//        $res = Services\Electricity::calculateDaily($firstOfMonth->addDays(4));
+        $res = Services\Electricity::calculateDaily($firstOfMonth);
+//        $res = Services\Electricity::calculateMonthly($firstOfMonth);
+        return Response::json($res);
     }
+
 
 
 }

@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 use Actuator;
 use ActuatorValue;
@@ -22,7 +23,7 @@ class Electricity extends Facade
     {
         if ($kw < 351) {
             return 'green';
-        } else if (1601) {
+        } else if ($kw < 1601) {
             return 'blue';
         } else {
             return 'red';
@@ -81,7 +82,9 @@ class Electricity extends Facade
     {
         $kwSpent = $numOfHours * ($powerConsumption / 1000);
 
+//        echo $kwSpentInMonth."<br>";
         if ($kwSpentInMonth < 351) {
+
             if (($kwSpentInMonth + $kwSpent) < 351) {
                 $cost = $kwSpent * $prices->zelenaZona->jednotarifno;
             } else if (($kwSpentInMonth + $kwSpent) < 1601) {
@@ -91,15 +94,15 @@ class Electricity extends Facade
             } else {
                 $greenZoneCost = (351 - $kwSpentInMonth) * $prices->zelenaZona->jednotarifno;
                 $blueZoneCost = ($kwSpent - (351 - $kwSpentInMonth)) * $prices->plavaZona->jednotarifno;
-                $redZoneCost = ($kwSpent (1601 - (351 - $kwSpentInMonth))) * $prices->crvenaZona->jednotarifno;
+                $redZoneCost = ($kwSpent - (1601 - (351 - $kwSpentInMonth))) * $prices->crvenaZona->jednotarifno;
                 $cost = $greenZoneCost + $blueZoneCost + $redZoneCost;
             }
         } else if ($kwSpentInMonth < 1601) {
             if (($kwSpentInMonth + $kwSpent) < 1601) {
                 $cost = $kwSpent * $prices->plavaZona->jednotarifno;
             } else {
-                $blueZoneCost = ($kwSpent - (351 - $kwSpentInMonth)) * $prices->plavaZona->jednotarifno;
-                $redZoneCost = ($kwSpent (1601 - (351 - $kwSpentInMonth))) * $prices->crvenaZona->jednotarifno;
+                $blueZoneCost = (1601 - $kwSpentInMonth) * $prices->plavaZona->jednotarifno;
+                $redZoneCost = ($kwSpent - (1601 - $kwSpentInMonth)) * $prices->crvenaZona->jednotarifno;
                 $cost = $blueZoneCost + $redZoneCost;
             }
         } else {
@@ -109,7 +112,147 @@ class Electricity extends Facade
         return $cost;
     }
 
-    public static function calculateDaily($date = null)
+    public static function calculateDaily($date = null) {
+//        DailyElectricity::truncate();
+
+        $actuators = Actuator::all();
+        $prices = Electricity::getElectricityPrices();
+        $daily = [];
+        /*
+         * If no date param is passed, function will calculate daily electricity
+         * for the day before today
+         */
+        if ($date != null) {
+        } else {
+            $date = new \Carbon\Carbon('now');
+        }
+
+        $beginingOfTheDay = $date->copy()->startOfDay();
+        $endOfTheDay = $date->copy()->endOfDay();
+
+
+        foreach($actuators as $actuator) {
+            $periodOn = 0;
+            $periodOff = 0;
+            $kw_spent = 0;
+            $cost = 0;
+            $powerConsumption = $actuator->power_consumption / 1000; // in kw
+            $lastValue = 0;
+
+            $actuatorValues = ActuatorValue::orderBy('created_at', 'asc')
+                ->where('created_at', '>=', $beginingOfTheDay)
+                ->where('created_at', '<=', $endOfTheDay)
+                ->where('actuator_id', '=', $actuator->id)
+                ->get();
+
+            if ($date->diffInDays($date->copy()->firstOfMonth()) == 0) {
+                $kw_spent_in_month = 0;
+            } else {
+                $dailyElectricity = DailyElectricity::orderBy('id', 'desc')
+                    ->where('created_at', '<', $endOfTheDay)
+                    ->where('actuator_id', '=', $actuator->id)
+                    ->first();
+
+                if($dailyElectricity) {
+                    $kw_spent_in_month = $dailyElectricity->kw_spent_in_month;
+                }else {
+//                    exit('Error');
+                }
+            }
+
+            if(count($actuatorValues) > 0) {
+                if ($actuatorValues[0]->value == 0) {
+                    //actuator was turned on on the beginning of the day
+                    $periodOnInTheBeginingOfTheDay = $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
+                    $periodOn += $periodOnInTheBeginingOfTheDay;
+                    $kw_spent += $periodOnInTheBeginingOfTheDay * $powerConsumption;
+                    $cost += \Services\Electricity::calculateCost($periodOnInTheBeginingOfTheDay, $actuator->power_consumption, $prices, $kw_spent);
+                } else {
+                    //actuator was turned off on the beginning of the day
+                    $periodOff += $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
+                }
+
+                $lastIndex = count($actuatorValues) - 1;
+                foreach ($actuatorValues as $key => $actuatorValue) {
+                    if ($key == $lastIndex) {
+                        //already counted this period
+                        continue;
+                    } else {
+                        if ($actuatorValue->value == 0) {
+                            //actuator was turned on on the beginning of the day
+                            $periodOff += $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
+                        } else {
+                            //actuator was turned off on the beginning of the day
+                            $tempPeriodOn = $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
+                            $periodOn += $tempPeriodOn;
+                            $kw_spent += $tempPeriodOn * $powerConsumption;
+                            $cost += \Services\Electricity::calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent);
+                        }
+                    }
+                }
+
+                if ($actuatorValues[$lastIndex]->value == 0) {
+                    //actuator was turned off on the end of the day
+                    $periodOff += $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
+                    $lastValue = 0;
+                } else {
+                    //actuator was turned on on the end of the day
+                    $periodOnInTheEndOfTheDay = $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
+                    $periodOn += $periodOnInTheEndOfTheDay;
+                    $kw_spent += $periodOnInTheEndOfTheDay * $powerConsumption;
+                    $cost += \Services\Electricity::calculateCost($periodOnInTheEndOfTheDay, $actuator->power_consumption, $prices, $kw_spent);
+                    $lastValue = 1;
+                }
+
+                $data = array(
+                    'actuator_id' => $actuator->id,
+                    'kw_spent' => $kw_spent,
+                    'kw_spent_in_month' => $kw_spent_in_month + $kw_spent,
+                    'cost' => $cost,
+                    'current_zone' => \Services\Electricity::calculateZone($kw_spent_in_month + $kw_spent),
+                    'last_value' => $lastValue,
+                    'created_at' => $date
+                );
+
+            }else {
+                // get current state of actuator
+                $lastDaySpendings = DailyElectricity::orderBy('id', 'desc')
+                    ->first();
+                if($lastDaySpendings) {
+                    if($lastDaySpendings->last_value == 0) {
+                        $kw_spent = 0;
+                    }else {
+                        $kw_spent = 24 * $powerConsumption;
+                        $cost = \Services\Electricity::calculateCost(24, $actuator->power_consumption, $prices, $lastDaySpendings->kw_spent_in_month);
+                    }
+                    $kw_spent_in_month = $lastDaySpendings->kw_spent_in_month + $kw_spent;
+                }else {
+                    $kw_spent = 0;
+                    $cost = 0;
+                    $kw_spent_in_month = 0;
+                }
+
+                $data = array(
+                    'actuator_id' => $actuator->id,
+                    'kw_spent' => $kw_spent,
+                    'kw_spent_in_month' => $kw_spent_in_month,
+                    'cost' => $cost,
+                    'current_zone' => Electricity::calculateZone($kw_spent_in_month + $kw_spent),
+                    'last_value' => $lastValue,
+                    'created_at' => $date
+                );
+
+            }
+
+            DailyElectricity::create($data);
+            $daily[] = $data;
+
+        }
+
+        return $daily;
+    }
+
+    public static function calculateDailyOld($date = null)
     {
         $daily = array();
         $actuators = Actuator::all();
@@ -181,8 +324,8 @@ class Electricity extends Facade
                     //actuator was turned on on the beginning of the day
                     $periodOnInTheBeginingOfTheDay = $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
                     $periodOn += $periodOnInTheBeginingOfTheDay;
-                    $cost += \Services\Electricity::calculateCost($periodOnInTheBeginingOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
                     $kw_spent += $periodOnInTheBeginingOfTheDay * $powerConsumption;
+                    $cost += \Services\Electricity::calculateCost($periodOnInTheBeginingOfTheDay, $actuator->power_consumption, $prices, $kw_spent);
                 } else {
                     //actuator was turned off on the beginning of the day
                     $periodOff += $actuatorValues[0]->created_at->diffInHours($beginingOfTheDay);
@@ -206,14 +349,13 @@ class Electricity extends Facade
                             //actuator was turned off on the beginning of the day
                             $tempPeriodOn = $actuatorValue->created_at->diffInHours($actuatorValues[$key + 1]->created_at);
                             $periodOn += $tempPeriodOn;
-                            $cost += \Services\Electricity::calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent_in_month);
                             $kw_spent += $tempPeriodOn * $powerConsumption;
-//                            echo "<br>".$powerConsumption . "<br>";
-//                            echo "<br>".$kw_spent. "<br>";
-//                            echo "<br>".\Services\Electricity::calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent_in_month) . "<br>";
+//                            echo $kw_spent . '=' .$tempPeriodOn * $powerConsumption."<br>";
+                            $cost += \Services\Electricity::calculateCost($tempPeriodOn, $actuator->power_consumption, $prices, $kw_spent);
                         }
                     }
                 }
+
 
                 /*
                  * Special case of calculating the value from the last tracked value,
@@ -227,20 +369,10 @@ class Electricity extends Facade
                     //actuator was turned on on the end of the day
                     $periodOnInTheEndOfTheDay = $actuatorValues[$lastIndex]->created_at->diffInHours($endOfTheDay);
                     $periodOn += $periodOnInTheEndOfTheDay;
-                    $cost += \Services\Electricity::calculateCost($periodOnInTheEndOfTheDay, $actuator->power_consumption, $prices, $kw_spent_in_month);
                     $kw_spent += $periodOnInTheEndOfTheDay * $powerConsumption;
+                    $cost += \Services\Electricity::calculateCost($periodOnInTheEndOfTheDay, $actuator->power_consumption, $prices, $kw_spent);
                     $lastValue = 1;
                 }
-
-
-                $lastDaySpendings = DailyElectricity::orderBy('id', 'desc')
-                    ->first();
-                if($lastDaySpendings) {
-                    $kw_spent_in_month = $lastDaySpendings->kw_spent_in_month;
-                }else {
-                    $kw_spent_in_month = 0;
-                }
-
 
                 $data = array(
                     'actuator_id' => $actuator->id,
@@ -251,7 +383,6 @@ class Electricity extends Facade
                     'last_value' => $lastValue,
                     'created_at' => $date
                 );
-
             } else {
 
                 // get current state of actuator
@@ -288,6 +419,7 @@ class Electricity extends Facade
             $daily[] = $data;
 
         }
+
         return $daily;
     }
 
