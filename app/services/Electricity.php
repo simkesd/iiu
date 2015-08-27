@@ -211,7 +211,9 @@ class Electricity extends Facade
                     'cost' => $cost,
                     'current_zone' => \Services\Electricity::calculateZone($kw_spent_in_month + $kw_spent),
                     'last_value' => $lastValue,
-                    'created_at' => $date
+                    'created_at' => $date,
+                    'period_on' => $periodOn,
+                    'period_off' => $periodOff
                 );
 
             }else {
@@ -239,7 +241,9 @@ class Electricity extends Facade
                     'cost' => $cost,
                     'current_zone' => Electricity::calculateZone($kw_spent_in_month + $kw_spent),
                     'last_value' => $lastValue,
-                    'created_at' => $date
+                    'created_at' => $date,
+                    'period_on' => $periodOn,
+                    'period_off' => $periodOff
                 );
 
             }

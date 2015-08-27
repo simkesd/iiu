@@ -150,8 +150,11 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
         ActuatorValuesDaily.get({id: $routeParams.id}, function(response) {
             $scope.details = response.data;
 
-            $scope.cost = 0;
-            $scope.kwSpent = 0;
+            $scope.cumulative = {};
+            $scope.cumulative.cost = 0;
+            $scope.cumulative.kwSpent = 0;
+            $scope.cumulative.periodOn = 0;
+            $scope.cumulative.periodOff = 0;
 
             var currentDay = $scope.details[0];
             var byDays = {};
@@ -163,15 +166,26 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                     byDays[date.getMonth()] = {};
                     byDays[date.getMonth()].cost = parseInt($scope.details[i].cost);
                     byDays[date.getMonth()].kwSpent = parseInt($scope.details[i].kw_spent);
+                    byDays[date.getMonth()].periodOn = $scope.details[i].period_on;
+                    byDays[date.getMonth()].periodOff = $scope.details[i].period_off;
+                    byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+
+                }else {
+                    byDays[date.getMonth()].cost += parseInt($scope.details[i].cost);
+                    byDays[date.getMonth()].kwSpent += parseInt($scope.details[i].kw_spent);
+                    byDays[date.getMonth()].periodOn += $scope.details[i].period_on;
+                    byDays[date.getMonth()].periodOff += $scope.details[i].period_off;
                     byDays[date.getMonth()].zone = $scope.details[i].current_zone;
                 }
 
-                byDays[date.getMonth()].cost += parseInt($scope.details[i].cost);
-                byDays[date.getMonth()].kwSpent += parseInt($scope.details[i].kw_spent);
-                byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+
+                $scope.cumulative.cost += parseInt($scope.details[i].cost);
+                $scope.cumulative.kwSpent += parseInt($scope.details[i].kw_spent);
+                $scope.cumulative.periodOn += parseInt($scope.details[i].period_on);
+                $scope.cumulative.periodOff += parseInt($scope.details[i].period_off);
             }
 
-            console.log(byDays);
+            $scope.byDays = byDays;
         });
 
         ActuatorValues.get({id: $routeParams.id}, function (response) {
