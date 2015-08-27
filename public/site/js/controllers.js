@@ -143,12 +143,35 @@ imarControllers.controller('actuatorSingleCtrl', ['$scope', '$routeParams', 'Act
     }]);
 
 imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams', 'Actuator', 'ActuatorValues', 'ActuatorValuesDaily', '$route', 'Util', 'ElectricityPrice',
-    function ($scope, $routeParams, actuator, ActuatorValuesDaily, ActuatorValues, $route, Util, ElectricityPrice) {
+    function ($scope, $routeParams, Actuator, ActuatorValues, ActuatorValuesDaily, $route, Util, ElectricityPrice) {
         console.log('actuator single values controller called');
         $scope.chart;
 
         ActuatorValuesDaily.get({id: $routeParams.id}, function(response) {
-           console.log(response);
+            $scope.details = response.data;
+
+            $scope.cost = 0;
+            $scope.kwSpent = 0;
+
+            var currentDay = $scope.details[0];
+            var byDays = {};
+
+            for(var i = 0; i < $scope.details.length; i++) {
+                var date = new Date($scope.details[i].created_at);
+
+                if(!byDays[date.getMonth()]) {
+                    byDays[date.getMonth()] = {};
+                    byDays[date.getMonth()].cost = parseInt($scope.details[i].cost);
+                    byDays[date.getMonth()].kwSpent = parseInt($scope.details[i].kw_spent);
+                    byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+                }
+
+                byDays[date.getMonth()].cost += parseInt($scope.details[i].cost);
+                byDays[date.getMonth()].kwSpent += parseInt($scope.details[i].kw_spent);
+                byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+            }
+
+            console.log(byDays);
         });
 
         ActuatorValues.get({id: $routeParams.id}, function (response) {
@@ -193,13 +216,13 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             //    resize: true
             //});
 
-            $scope.donutChart = Morris.Donut({
-                element: 'morris-donut-chart',
-                data: [
-                    {label: "Minutes On", value: response.periodOn},
-                    {label: "Minutes off", value: response.periodOff}
-                ]
-            });
+            //$scope.donutChart = Morris.Donut({
+            //    element: 'morris-donut-chart',
+            //    data: [
+            //        {label: "Minutes On", value: response.periodOn},
+            //        {label: "Minutes off", value: response.periodOff}
+            //    ]
+            //});
 
             $scope.changeActuatorState = function () {
                 $scope.actuator.latest_value.value = ($scope.actuator.latest_value.value == 0) ? 1 : 0;
@@ -213,7 +236,7 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             };
 
             ElectricityPrice.get({id: $routeParams.id}, function (response) {
-                console.log('price', response);
+                //console.log('price', response);
             });
         });
     }]);

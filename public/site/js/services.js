@@ -13,15 +13,19 @@ imarServices.factory('SensorValues', ['$resource',
         return $resource('/api/v1.0/sensor/:id/values', {});
     }]);
 
-imarServices.factory('ActuatorValuesDaily', ['$resource',
-    function ($resource) {
-        return $resource('/api/v1.0/actuator/:id/timeLapseData', {});
-    }]);
-
-
 imarServices.factory('Actuator', ['$resource',
     function ($resource) {
         return $resource(root+'/api/v1.0/actuator/:id', {});
+    }]);
+
+imarServices.factory('ActuatorValues', ['$resource',
+    function ($resource) {
+        return $resource(root+'/api/v1.0/actuator/:id/values', {});
+    }]);
+
+imarServices.factory('ActuatorValuesDaily', ['$resource',
+    function ($resource) {
+        return $resource('/api/v1.0/actuator/:id/timeLapseData', {});
     }]);
 
 imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$routeParams',
@@ -88,11 +92,6 @@ imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$r
             }
         };
         return util;
-    }]);
-
-imarServices.factory('ActuatorValues', ['$resource',
-    function ($resource) {
-        return $resource(root+'/api/v1.0/actuator/:id/values', {});
     }]);
 
 imarServices.factory('ElectricityPrice', ['$resource',

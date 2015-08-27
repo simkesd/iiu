@@ -40,6 +40,7 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
 
     Route::group(array('prefix' => 'actuator'), function()
     {
+        Route::get('{id}/timeLapseData', 'ActuatorValueController@timeLapseData');
         Route::get('power', 'ActuatorController@power');
         Route::get('{id}/calculatePrice', 'ActuatorController@calculatePrice');
 
@@ -48,7 +49,6 @@ Route::group(array('prefix' => 'api/v1.0', 'before' => 'auth.basic'), function()
         Route::post('{id}/values', 'ActuatorValueController@store');
         Route::put('{id}/values/{valueId}', 'ActuatorValueController@update');
         Route::delete('{id}/values/{valueId}', 'ActuatorValueController@destroy');
-        Route::get('{id}/timeLapseData', 'ActuatorValueController@timeLapseData');
     });
     Route::resource('actuator', 'ActuatorController');
 
