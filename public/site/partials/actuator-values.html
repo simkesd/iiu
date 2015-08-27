@@ -101,10 +101,10 @@
             <!--</div>-->
             <div class="row">
                 <div class="col-lg-6">
-                    <div>Time measured: {{ (periodOn + periodOff) / 24 }} hours.</div>
-                    <div>Electricity spent: {{ }} KW/h</div>
-                    <div>Zone entered: {{ }}</div>
-                    <div>Cost: {{  }}</div>
+                    <div>Time measured: {{ (cumulative.periodOn + cumulative.periodOff) }} hours.</div>
+                    <div>Electricity spent: {{ cumulative.kwSpent }} KW/h</div>
+                    <div>Max zone entered: {{ cumulative.zone }}</div>
+                    <div>Cost: {{ cumulative.cost | number: 2 }} RSD</div>
                 </div>
                 <div class="col-lg-6">
                     <div id="actuator-statistics-chart" class="panel-collapse collapse in">
