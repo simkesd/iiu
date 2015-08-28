@@ -10,6 +10,7 @@ class DailyElectricityTableSeeder extends Seeder {
 
         $date = new \Carbon\Carbon();
         \Services\Electricity::calculateMonthly($date);
+        \Services\Electricity::calculateMonthly($date->addMonth());
 
     }
 
