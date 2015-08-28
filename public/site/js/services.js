@@ -74,14 +74,6 @@ imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', 'Ac
                         $scope.actuator.latest_value = response.latest_value;
                         $scope.data = util.datesFromSensorValues($scope.actuatorValues);
 
-                        //console.log($scope.periodOn, $scope.periodOff);
-
-                        //$scope.chart.setData($scope.data);
-                        //$scope.donutChart.setData([
-                        //    {label: "Minutes On", value: $scope.periodOn},
-                        //    {label: "Minutes off", value: $scope.periodOff}
-                        //]);
-
                     });
 
                     ActuatorValuesDaily.get({id: $routeParams.id, from: fromDateTimeUrlEncoded, to: toDateTimeUrlEncoded}, function(response) {
@@ -122,7 +114,6 @@ imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', 'Ac
                         }
 
                         $scope.byDays = byDays;
-                        console.log($scope.cumulative);
                     });
 
                     return true;

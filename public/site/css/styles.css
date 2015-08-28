@@ -11,3 +11,7 @@
 .panel-heading a.collapsed:after {
     content:"\e080";
 }
+
+.actuator-statistics-cumulative {
+    font-size:  15px;
+}

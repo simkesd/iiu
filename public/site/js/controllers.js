@@ -186,6 +186,45 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             }
 
             $scope.byDays = byDays;
+
+            $scope.donutChart = Morris.Donut({
+                element: 'morris-donut-chart',
+                data: [
+                    {label: "Minutes On", value: $scope.cumulative.periodOn},
+                    {label: "Minutes off", value: $scope.cumulative.periodOff}
+                ]
+            });
+
+            $scope.monthFromNumber = function(number) {
+                var months = [];
+                months[1] = 'january';
+                months[2] = 'february';
+                months[3] = 'march';
+                months[4] = 'april';
+                months[5] = 'may';
+                months[6] = 'june';
+                months[7] = 'july';
+                months[8] = 'august';
+                months[9] = 'september';
+                months[10] = 'october';
+                months[11] = 'november';
+                months[12] = 'december';
+                
+                return months[number];
+            };
+            console.log(byDays);
+
+            //$scope.chart = Morris.Line({
+            //    element: 'morris-area-chart',
+            //    data: $scope.byDays.kw_spent,
+            //    xkey: 'period',
+            //    ykeys: ['value'],
+            //    //xkey: $scope.data[0].period - 2000,
+            //    labels: ['opala test'],
+            //    pointSize: 4,
+            //    hideHover: 'auto',
+            //    resize: true
+            //});
         });
 
         ActuatorValues.get({id: $routeParams.id}, function (response) {
@@ -230,14 +269,6 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             //    resize: true
             //});
 
-            //$scope.donutChart = Morris.Donut({
-            //    element: 'morris-donut-chart',
-            //    data: [
-            //        {label: "Minutes On", value: response.periodOn},
-            //        {label: "Minutes off", value: response.periodOff}
-            //    ]
-            //});
-
             $scope.changeActuatorState = function () {
                 $scope.actuator.latest_value.value = ($scope.actuator.latest_value.value == 0) ? 1 : 0;
                 ActuatorValues.save({
@@ -254,3 +285,7 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
             });
         });
     }]);
+
+function test() {
+    alert('test');
+}

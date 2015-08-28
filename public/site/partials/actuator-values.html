@@ -100,22 +100,56 @@
                 <!--</div>-->
             <!--</div>-->
             <div class="row">
-                <div class="col-lg-6">
-                    <div>Time measured: {{ (cumulative.periodOn + cumulative.periodOff) }} hours.</div>
-                    <div>Electricity spent: {{ cumulative.kwSpent }} KW/h</div>
-                    <div>Cost: {{ cumulative.cost | number: 2 }} RSD</div>
+                <br/>
+                <div class="col-lg-12 actuator-statistics-cumulative">
+                        <div class="col-sm-4">Time measured: {{ (cumulative.periodOn + cumulative.periodOff) }} hours</div>
+                        <div class="col-sm-4">Electricity spent: {{ cumulative.kwSpent }} KW/h</div>
+                        <div class="col-sm-4">Cost: {{ cumulative.cost | number: 2 }} RSD</div>
                 </div>
-                <div class="col-lg-6">
-                    <div id="actuator-statistics-chart" class="panel-collapse collapse in">
-                        <div class="panel-body">
-                            <div class="morris-chart">
-                                <div id="morris-donut-chart"></div>
-                            </div>
+                <hr/>
+                <div id="actuator-statistics-chart" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <div class="morris-chart">
+                            <div id="morris-donut-chart"></div>
                         </div>
                     </div>
-                    <!-- /.panel-body -->
                 </div>
+                <!-- /.panel-body -->
             </div>
+
+            <div>
+                <div class="dataTable_wrapper">
+                    <table class="table table-striped table-bordered table-hover" id="actuator-statistics-by-month">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Month</th>
+                            <th>Cost</th>
+                            <th>KW spent</th>
+                            <th>Period on</th>
+                            <th>Period off</th>
+                            <th>Zone entered</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="(key, value) in byDays" class="clickable-row odd gradeX">
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ monthFromNumber(key) }}</td>
+                            <td>{{ value.cost }}</td>
+                            <td>{{ value.kwSpent }}</td>
+                            <td>{{ value.periodOn }}</td>
+                            <td>{{ value.periodOff }}</td>
+                            <td>{{ value.zone }}</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+
+            <br/>
+            <br/>
 
         </div>
         <!-- /.panel -->
