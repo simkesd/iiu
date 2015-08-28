@@ -28,8 +28,8 @@ imarServices.factory('ActuatorValuesDaily', ['$resource',
         return $resource('/api/v1.0/actuator/:id/timeLapseData', {});
     }]);
 
-imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$routeParams',
-    function ($location, SensorValues, ActuatorValues, $routeParams) {
+imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', 'ActuatorValuesDaily', '$routeParams',
+    function ($location, SensorValues, ActuatorValues, ActuatorValuesDaily, $routeParams) {
         var util = {
             redirect: function (path) {
                 $location.path(path);
@@ -72,19 +72,59 @@ imarServices.factory('Util', ['$location', 'SensorValues', 'ActuatorValues', '$r
                         $scope.actuatorValues = response.actuatorValues;
                         $scope.actuator = response.actuator;
                         $scope.actuator.latest_value = response.latest_value;
-                        $scope.periodOn = response.periodOn;
-                        $scope.periodOff = response.periodOff;
                         $scope.data = util.datesFromSensorValues($scope.actuatorValues);
 
-                        console.log($scope.periodOn, $scope.periodOff);
+                        //console.log($scope.periodOn, $scope.periodOff);
 
-                        $scope.chart.setData($scope.data);
-                        $scope.donutChart.setData([
-                            {label: "Minutes On", value: $scope.periodOn},
-                            {label: "Minutes off", value: $scope.periodOff}
-                        ]);
+                        //$scope.chart.setData($scope.data);
+                        //$scope.donutChart.setData([
+                        //    {label: "Minutes On", value: $scope.periodOn},
+                        //    {label: "Minutes off", value: $scope.periodOff}
+                        //]);
 
                     });
+
+                    ActuatorValuesDaily.get({id: $routeParams.id, from: fromDateTimeUrlEncoded, to: toDateTimeUrlEncoded}, function(response) {
+                        $scope.details = response.data;
+
+                        $scope.cumulative = {};
+                        $scope.cumulative.cost = 0;
+                        $scope.cumulative.kwSpent = 0;
+                        $scope.cumulative.periodOn = 0;
+                        $scope.cumulative.periodOff = 0;
+
+                        var byDays = {};
+
+                        for(var i = 0; i < $scope.details.length; i++) {
+                            var date = new Date($scope.details[i].created_at);
+
+                            if(!byDays[date.getMonth()]) {
+                                byDays[date.getMonth()] = {};
+                                byDays[date.getMonth()].cost = parseInt($scope.details[i].cost);
+                                byDays[date.getMonth()].kwSpent = parseInt($scope.details[i].kw_spent);
+                                byDays[date.getMonth()].periodOn = $scope.details[i].period_on;
+                                byDays[date.getMonth()].periodOff = $scope.details[i].period_off;
+                                byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+
+                            }else {
+                                byDays[date.getMonth()].cost += parseInt($scope.details[i].cost);
+                                byDays[date.getMonth()].kwSpent += parseInt($scope.details[i].kw_spent);
+                                byDays[date.getMonth()].periodOn += $scope.details[i].period_on;
+                                byDays[date.getMonth()].periodOff += $scope.details[i].period_off;
+                                byDays[date.getMonth()].zone = $scope.details[i].current_zone;
+                            }
+
+
+                            $scope.cumulative.cost += parseInt($scope.details[i].cost);
+                            $scope.cumulative.kwSpent += parseInt($scope.details[i].kw_spent);
+                            $scope.cumulative.periodOn += parseInt($scope.details[i].period_on);
+                            $scope.cumulative.periodOff += parseInt($scope.details[i].period_off);
+                        }
+
+                        $scope.byDays = byDays;
+                        console.log($scope.cumulative);
+                    });
+
                     return true;
                 } else {
 
