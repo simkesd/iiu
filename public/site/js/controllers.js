@@ -5,14 +5,22 @@ imarControllers.controller('welcomeCtrl', ['$scope',
         console.log('welcome controller called');
     }]);
 
+imarControllers.controller('activeTabsCtrl', ['$scope', '$route', '$location',
+    function ($scope, $route, $location) {
+
+        $scope.$on('$routeChangeSuccess',function(event,current){
+            $scope.activeTab = current.activeTab;
+        });
+    }]);
+
 /**********************************
  **********************************
  *          SENSORS
  **********************************
  **********************************/
 
-imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor', 'Util',
-    function ($scope, $http, Sensor, Util) {
+imarControllers.controller('sensorListCtrl', ['$scope', '$http', 'Sensor', 'Util', '$route',
+    function ($scope, $http, Sensor, Util, $route) {
         console.log('sensor controller called');
         $scope.redirect = Util.redirect;
         Sensor.get({}, function (response) {
@@ -209,7 +217,7 @@ imarControllers.controller('actuatorSingleValuesCtrl', ['$scope', '$routeParams'
                 months[10] = 'october';
                 months[11] = 'november';
                 months[12] = 'december';
-                
+
                 return months[number];
             };
             console.log(byDays);
